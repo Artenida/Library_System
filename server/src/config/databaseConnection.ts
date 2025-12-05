@@ -18,9 +18,7 @@ async function testConnection() {
     client.release();
   } catch (error) {
     console.error('❌ Database connection failed:', error);
-  } finally {
-    await pool.end();
-  }
+  } 
 }
 
 testConnection();
