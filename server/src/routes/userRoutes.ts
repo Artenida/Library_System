@@ -5,8 +5,8 @@ import { authenticate, isAdmin } from "../middleware/authMiddleware";
 const router = Router();
 
 router.get("/", authenticate,isAdmin,getUsers);
-router.get("/:user_id", authenticate, getUser);
-router.put("/:user_id", authenticate, updateUser);
-router.delete("/:user_id", authenticate, deleteUser);
+router.get("/:id", authenticate, getUser);
+router.put("/:id", authenticate, updateUser);
+router.delete("/:id", authenticate, deleteUser);
 
 export default router

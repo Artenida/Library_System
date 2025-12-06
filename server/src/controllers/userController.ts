@@ -24,13 +24,13 @@ export const getUsers = async (req: Request, res: Response): Promise<any> => {
 
 export const getUser = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { user_id } = req.params;
+    const { id } = req.params;
 
-    if (!user_id) {
+    if (!id) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    const user = await User.getUser(user_id);
+    const user = await User.getUser(id);
 
     if (user) {
       return res.status(200).json({
@@ -51,19 +51,20 @@ export const getUser = async (req: Request, res: Response): Promise<any> => {
 
 export const updateUser = async (req: AuthRequest, res: Response) => {
   try {
-    const { user_id } = req.params;
+    const { id } = req.params;
     const data: Partial<IUser> = req.body;
+    const {user} = req as any;
 
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
-    if (!user_id)
+    if (!id)
       return res.status(400).json({ message: "USer ID is required!" });
 
-    if (req.user.role !== "admin" && req.user.user_id !== user_id) {
+    if (user.role !== "admin" && user.id !== id) {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    const updateUser = await User.updateUser(user_id, data);
+    const updateUser = await User.updateUser(id, data);
 
     const { password_hash, ...safeUser } = updateUser;
 
@@ -83,17 +84,17 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
 
 export const deleteUser = async (req: AuthRequest, res: Response) => {
   try {
-    const { user_id } = req.params;
-    if (!user_id)
+    const { id } = req.params;
+    if (!id)
       return res.status(400).json({ message: "User ID is required" });
 
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
-    if (req.user.role !== "admin" && req.user.user_id !== user_id) {
+    if (req.user.role !== "admin" && req.user.id !== id) {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    await User.deleteUser(user_id);
+    await User.deleteUser(id);
 
     res.status(200).json({
       success: true,

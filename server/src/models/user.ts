@@ -10,11 +10,11 @@ export interface IUser {
 }
 
 export class User {
-  static async getUser(user_id: string): Promise<IUser> {
+  static async getUser(id: string): Promise<IUser> {
     try {
-      const query = `SELECT id, username, email, password_hash, role FROM users WHERE id = ?`;
+      const query = `SELECT id, username, email, password_hash, role FROM users WHERE id = $1`;
 
-      const result = await pool.query(query, [user_id]);
+      const result = await pool.query(query, [id]);
 
       if (result.rows.length > 0) {
         return result.rows[0];
@@ -29,7 +29,7 @@ export class User {
 
   static async getUserByEmail(email: string): Promise<IUser | null> {
     try {
-      const query = `SELECT id, username, email, password_hash, role FROM users WHERE email = ?`;
+      const query = `SELECT id, username, email, password_hash, role FROM users WHERE email = $1`;
       const result = await pool.query(query, [email]);
       if (result.rows.length === 0) return null;
       return result.rows[0];
@@ -59,7 +59,7 @@ export class User {
 
       const result = await pool.query(
         `INSERT INTO users (username, email, password_hash, role)
-            VALUES (?,?,?,?)
+            VALUES ($1,$2,$3,$4)
             RETURNING id, username, email, password_hash, role`,
         [data.username, data.email, hashed_password, data.role || "user"]
       );
@@ -72,7 +72,7 @@ export class User {
   }
 
   static async updateUser(
-    user_id: String,
+    id: String,
     data: Partial<IUser>
   ): Promise<IUser> {
     try {
@@ -93,7 +93,7 @@ export class User {
       const result = await pool.query(
         `UPDATE users SET ${setQuery} WHERE id=$${fields.length + 1} 
             RETURNING id, username, email, password_hash, role`,
-        [...values, user_id]
+        [...values, id]
       );
 
       if (result.rows.length === 0) throw new Error("User not found!");
@@ -104,11 +104,11 @@ export class User {
     }
   }
 
-  static async deleteUser(user_id: String): Promise<void> {
+  static async deleteUser(id: String): Promise<void> {
     try {
       const result = await pool.query(
-        `DELETE FROM users WHERE id = ? RETURNING id`,
-        [user_id]
+        `DELETE FROM users WHERE id = $1 RETURNING id`,
+        [id]
       );
 
       if (result.rows.length === 0) throw new Error("User not found!");
