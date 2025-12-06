@@ -41,7 +41,7 @@ export class User {
 
   static async getUsers(): Promise<IUser[]> {
     try {
-      const query = `SELECT id, username, email, password_hash, role FROM users`;
+      const query = `SELECT id, username, email, role FROM users`;
       const result = await pool.query(query);
 
       return result.rows;
