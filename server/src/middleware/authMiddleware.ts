@@ -1,10 +1,11 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import type { AuthRequest } from "../types/types";
 
 const JWT_SECRET = process.env.JWT_SECRET || "access_token";
 
 export const authenticate = (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -18,4 +19,17 @@ export const authenticate = (
   } catch (error) {
     res.status(401).json({ message: "Invalid token" });
   }
+};
+
+export const isAdmin = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const user = req.user;
+  if (!user || user.role !== "admin") {
+    return res.status(403).json({ message: "Access denied. Admins only." });
+  }
+
+  next();
 };
