@@ -43,7 +43,7 @@ export const createBook = async (req: AuthRequest, res: Response) => {
 
 export const updateBook = async (req: AuthRequest, res: Response) => {
   try {
-    const book_id = req.params.book_id;
+    const book_id = req.params.id;
 
     if (req.user?.role === "user") {
       const updated = await Book.updateUserBookStatus(

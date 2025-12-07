@@ -159,7 +159,7 @@ export class Book {
         throw new Error("At least one genre is required");
       }
 
-      const insertBookQuery = `INSERT INTO books (title, description, published_date, page, price, cover_image_url, state) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id AS book_id, *`;
+      const insertBookQuery = `INSERT INTO books (title, description, published_date, pages, price, cover_image_url, state) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id AS book_id, *`;
 
       const bookValues = [
         data.title,
@@ -192,7 +192,7 @@ export class Book {
       await client.query("COMMIT");
 
       const formattedQuery =
-        BASE_QUERY + `WHERE b.id = $1 ORDER BY ub.created_at DESC`;
+        BASE_QUERY + ` WHERE b.id = $1 ORDER BY ub.created_at DESC`;
       const fullResult = await pool.query(formattedQuery, [book_id]);
       const books = formatBooks(fullResult.rows);
 
