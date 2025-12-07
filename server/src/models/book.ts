@@ -358,4 +358,65 @@ export class Book {
       client.release();
     }
   }
+
+  static async borrowBook(
+    user_id: string,
+    book_id: string,
+    from_date: string,
+    to_date?: string
+  ) {
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      // Check if the book exists and is free
+      const bookCheck = await client.query(
+        `SELECT state FROM books WHERE id = $1`,
+        [book_id]
+      );
+
+      if (bookCheck.rows.length === 0) {
+        throw new Error("Book not found");
+      }
+
+      if (bookCheck.rows[0].state === "booked") {
+        throw new Error("Book is already borrowed!");
+      }
+
+      //Check if the user already borrowed the same book
+      const existing = await client.query(
+        `SELECT id FROM user_books 
+        WHERE user_id = $1 AND book_id = $2
+        AND status IN ('reading')`,
+        [user_id, book_id]
+      );
+
+      if (existing.rows.length > 0) {
+        throw new Error("User already has this book in reading status");
+      }
+
+      //Assign book to user
+      const userBookInsert = await client.query(
+        `INSERT INTO user_books (user_id, book_id, status, from_date, to_date)
+        VALUES ($1, $2, 'reading', $3, $4)
+        RETURNING *`,
+        [user_id, book_id, from_date, to_date || null]
+      );
+
+      //Update book state
+      await client.query(`UPDATE books SET state = 'borrowed' WHERE id = $1`, [
+        book_id,
+      ]);
+
+      await client.query("COMMIT");
+
+      return userBookInsert.rows[0];
+    } catch (error: any) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
 }

@@ -82,3 +82,29 @@ export const deleteBook = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ message: "Failed to delete book" });
   }
 };
+
+export const borrowBook = async (req: AuthRequest, res: Response) => {
+  try {
+    const user_id = req.user?.id;
+    const { book_id, from_date, to_date } = req.body;
+
+    if (!user_id || !book_id || !from_date) {
+      return res.status(400).json({
+        success: false,
+        message: "user_id, book_id, and from_date are required",
+      });
+    }
+    const result = await Book.borrowBook(user_id, book_id, from_date, to_date);
+
+    return res.status(201).json({
+      success: true,
+      message: "Book borrowed successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

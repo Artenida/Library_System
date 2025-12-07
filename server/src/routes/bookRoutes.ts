@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authenticate, isAdmin } from "../middleware/authMiddleware";
 import {
+  borrowBook,
   createBook,
   deleteBook,
   getSingleBook,
@@ -13,5 +14,6 @@ router.get("/:id", authenticate, getSingleBook);
 router.post("/", authenticate, isAdmin,createBook);
 router.put("/:id", authenticate, updateBook);
 router.delete("/:id", authenticate, isAdmin, deleteBook);
+router.post("/borrow", authenticate, borrowBook)
 
 export default router;
