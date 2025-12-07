@@ -31,12 +31,20 @@ export const getSingleBook = async (
   }
 };
 
-export const getBooks = async (req: Request, res: Response) => {
+export const getBooks = async (req: AuthRequest, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const books = await Book.getBooks(page, limit);
+    const currentUserId = (req.user as any)?.id;
+    const currentUserRole = (req.user as any)?.role;
+
+    const books = await Book.getBooks(
+      page,
+      limit,
+      currentUserId,
+      currentUserRole
+    );
 
     res.status(200).json({
       success: true,
@@ -47,10 +55,11 @@ export const getBooks = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error("Error in getBooksController:", error.message);
-    res.status(500).json({ success: false, message: "Failed to retrieve books" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to retrieve books" });
   }
 };
-
 
 export const createBook = async (req: AuthRequest, res: Response) => {
   try {

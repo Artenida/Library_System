@@ -38,7 +38,11 @@ const BASE_QUERY = `SELECT b.id AS book_id, b.title, b.description, b.published_
                     LEFT JOIN book_genres bg ON bg.book_id = b.id
                     LEFT JOIN genres g ON bg.genre_id = g.id`;
 
-const formatBooks = (rows: any[]): IBook[] => {
+const formatBooks = (
+  rows: any[],
+  currentUserId?: string,
+  currentUserRole?: string
+): IBook[] => {
   const map = new Map<string, IBook>();
 
   rows.forEach((row) => {
@@ -59,14 +63,28 @@ const formatBooks = (rows: any[]): IBook[] => {
     const book = map.get(book_id)!;
 
     if (row.user_id) {
-      const exists = book?.user!.some((u) => u.user_id === row.user_id);
-      if (!exists) {
-        book.user!.push({
-          user_id: row.user_id,
-          name: row.username,
-          email: row.email,
-          role: row.role,
-        });
+      if (currentUserRole === "admin" || row.user_id === currentUserId) {
+        // Admin sees all user info
+        const exists = book.user!.some((u) => u.user_id === row.user_id);
+        if (!exists) {
+          book.user!.push({
+            user_id: row.user_id,
+            name: row.username,
+            email: row.email,
+            role: row.role,
+          });
+        }
+      } else {
+        // Normal users see only the user_id
+        const exists = book.user!.some((u) => u.user_id === row.user_id);
+        if (!exists) {
+          book.user!.push({
+            user_id: row.user_id,
+            name: "", // Hide name
+            email: "", // Hide email
+            role: "", // Hide role
+          });
+        }
       }
     }
 
@@ -98,7 +116,9 @@ const formatBooks = (rows: any[]): IBook[] => {
 export class Book {
   static async getBooks(
     page: number,
-    limit: number
+    limit: number,
+    currentUserId?: string,
+    currentUserRole?: string
   ): Promise<IBook[]> {
     try {
       const offset = (page - 1) * limit; // Calculate offset for pagination
@@ -113,7 +133,7 @@ export class Book {
         return [];
       }
 
-      const books = formatBooks(result.rows);
+      const books = formatBooks(result.rows, currentUserId, currentUserRole);
       if (books.length === 0) {
         console.warn("No books found in DB");
       }
