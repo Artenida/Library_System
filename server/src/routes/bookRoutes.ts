@@ -5,15 +5,17 @@ import {
   createBook,
   deleteBook,
   getSingleBook,
+  getUserBooks,
   updateBook,
 } from "../controllers/bookControllers";
 const router = Router();
 
 //router.get("/", authenticate, getBooks);
+router.post("/", authenticate, isAdmin, createBook);
+router.get("/user", authenticate, getUserBooks);
+router.post("/borrow", authenticate, borrowBook);
 router.get("/:id", authenticate, getSingleBook);
-router.post("/", authenticate, isAdmin,createBook);
 router.put("/:id", authenticate, updateBook);
 router.delete("/:id", authenticate, isAdmin, deleteBook);
-router.post("/borrow", authenticate, borrowBook)
 
 export default router;

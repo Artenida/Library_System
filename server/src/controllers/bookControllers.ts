@@ -108,3 +108,50 @@ export const borrowBook = async (req: AuthRequest, res: Response) => {
     });
   }
 };
+
+export const getUserBooks = async (req: AuthRequest, res: Response) => {
+  try {
+    const role = req.user?.role;
+    let user_id: string | undefined;
+    let includeDeleted = false;
+
+    if (role === "admin") {
+      // admin selects which user to view
+      user_id = req.query.user_id as string;
+
+      if (!user_id) {
+        return res.status(400).json({
+          success: false,
+          message: "user_id is required for admin requests",
+        });
+      }
+
+      includeDeleted = true;
+    } else {
+      // normal user → use authenticated ID
+      user_id = req.user?.id;
+
+      if (!user_id) {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      }
+
+      includeDeleted = false;
+    }
+
+    const books = await Book.getBooksByUser(user_id, includeDeleted);
+
+    return res.status(200).json({
+      success: true,
+      count: books.length,
+      data: books,
+    });
+  } catch (error: any) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
