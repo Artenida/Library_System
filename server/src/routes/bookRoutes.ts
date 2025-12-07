@@ -4,6 +4,7 @@ import {
   borrowBook,
   createBook,
   deleteBook,
+  getBooks,
   getSingleBook,
   getUserBooks,
   updateBook,
@@ -11,6 +12,7 @@ import {
 const router = Router();
 
 //router.get("/", authenticate, getBooks);
+router.get("/", authenticate, getBooks);
 router.post("/", authenticate, isAdmin, createBook);
 router.get("/user", authenticate, getUserBooks);
 router.post("/borrow", authenticate, borrowBook);

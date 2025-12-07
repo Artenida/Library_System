@@ -96,11 +96,18 @@ const formatBooks = (rows: any[]): IBook[] => {
 };
 
 export class Book {
-  static async getBooks(): Promise<IBook[]> {
+  static async getBooks(
+    page: number,
+    limit: number
+  ): Promise<IBook[]> {
     try {
-      const query = BASE_QUERY + `ORDER BY b.title ASC, ub.created_at DESC`;
+      const offset = (page - 1) * limit; // Calculate offset for pagination
 
-      const result = await pool.query(query);
+      const query =
+        BASE_QUERY +
+        ` ORDER BY b.title ASC, ub.created_at DESC LIMIT $1 OFFSET $2`;
+
+      const result = await pool.query(query, [limit, offset]);
       if (!result || !result.rows) {
         console.warn("No rows returned from getBooks()");
         return [];
@@ -421,26 +428,25 @@ export class Book {
   }
 
   static async getBooksByUser(user_id: string, includeDeleted: boolean) {
-  try {
-    const query = `
+    try {
+      const query = `
       ${BASE_QUERY}
        WHERE ub.user_id = $1
       ${includeDeleted ? "" : " AND ub.status != 'deleted'"}
        ORDER BY ub.created_at DESC
     `;
 
-    const result = await pool.query(query, [user_id]);
+      const result = await pool.query(query, [user_id]);
 
-    if (!result.rows || result.rows.length === 0) {
-      return [];
+      if (!result.rows || result.rows.length === 0) {
+        return [];
+      }
+
+      // Reuse your formatter to group authors/genres
+      return formatBooks(result.rows);
+    } catch (error: any) {
+      console.error("Error retrieving user books:", error.message);
+      throw new Error("Failed to retrieve user books");
     }
-
-    // Reuse your formatter to group authors/genres
-    return formatBooks(result.rows);
-  } catch (error: any) {
-    console.error("Error retrieving user books:", error.message);
-    throw new Error("Failed to retrieve user books");
   }
-}
-
 }

@@ -31,6 +31,27 @@ export const getSingleBook = async (
   }
 };
 
+export const getBooks = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const books = await Book.getBooks(page, limit);
+
+    res.status(200).json({
+      success: true,
+      page,
+      limit,
+      count: books.length,
+      data: books,
+    });
+  } catch (error: any) {
+    console.error("Error in getBooksController:", error.message);
+    res.status(500).json({ success: false, message: "Failed to retrieve books" });
+  }
+};
+
+
 export const createBook = async (req: AuthRequest, res: Response) => {
   try {
     const book = await Book.createBook(req.body);
