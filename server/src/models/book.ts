@@ -145,7 +145,11 @@ export class Book {
     }
   }
 
-  static async getSingleBook(book_id: string): Promise<IBook | null> {
+  static async getSingleBook(
+    book_id: string,
+    currentUserId?: string,
+    currentUserRole?: string
+  ): Promise<IBook | null> {
     try {
       if (!book_id) {
         console.warn("getSingleBook called without book_id");
@@ -161,7 +165,7 @@ export class Book {
         return null;
       }
 
-      const books = formatBooks(result.rows);
+      const books = formatBooks(result.rows, currentUserId, currentUserRole);
 
       return books[0] ?? null;
     } catch (error: any) {

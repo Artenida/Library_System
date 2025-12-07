@@ -3,13 +3,15 @@ import { AuthRequest } from "../types/types";
 import type { Request, Response } from "express";
 
 export const getSingleBook = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ): Promise<any> => {
   try {
     const { id } = req.params;
+    const currentUserId = (req.user as any)?.id;
+    const currentUserRole = (req.user as any)?.role;
 
-    const book = await Book.getSingleBook(id);
+    const book = await Book.getSingleBook(id, currentUserId, currentUserRole);
 
     if (!book) {
       return res.status(404).json({
