@@ -7,17 +7,20 @@ import {
   getBooks,
   getSingleBook,
   getUserBooks,
-  updateBook,
+  updateBookAdmin,
+  updateUserBookStatus,
 } from "../controllers/bookControllers";
 const router = Router();
 
 //router.get("/", authenticate, getBooks);
 router.get("/", authenticate, getBooks);
-router.post("/", authenticate, isAdmin, createBook);
-router.get("/user", authenticate, getUserBooks);
-router.post("/borrow", authenticate, borrowBook);
 router.get("/:id", authenticate, getSingleBook);
-router.put("/:id", authenticate, updateBook);
-router.delete("/:id", authenticate, isAdmin, deleteBook);
+router.get("/user/books", authenticate, getUserBooks);
+router.post("/borrow", authenticate, borrowBook);
+router.put("/user/books/:user_book_id", authenticate, updateUserBookStatus);
+
+router.post("/admin/books", authenticate, isAdmin, createBook);
+router.put("/admin/books/:id", authenticate, isAdmin, updateBookAdmin);
+router.delete("/admin/books/:id", authenticate, isAdmin, deleteBook);
 
 export default router;

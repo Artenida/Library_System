@@ -73,27 +73,42 @@ export const createBook = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateBook = async (req: AuthRequest, res: Response) => {
+export const updateUserBookStatus = async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role !== "user") {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const user_book_id = req.params.user_book_id;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ message: "Status is required" });
+    }
+
+    const updated = await Book.updateUserBookStatus(user_book_id, status);
+
+    return res.status(200).json({
+      message: "Reading status updated",
+      updated,
+    });
+  } catch (error: any) {
+    console.error("updateUserBookStatus:", error.message);
+    return res.status(500).json({ message: "Failed to update reading status" });
+  }
+};
+
+export const updateBookAdmin = async (req: AuthRequest, res: Response) => {
   try {
     const book_id = req.params.id;
 
-    if (req.user?.role === "user") {
-      const updated = await Book.updateUserBookStatus(
-        req.user.id,
-        book_id,
-        req.body.status
-      );
-      return res.status(200).json(updated);
-    }
+    await Book.updateBook(book_id, req.body);
 
-    if (req.user?.role === "admin") {
-      await Book.updateBook(book_id, req.body);
-      return res.status(200).json({ message: "Book updated successfully" });
-    }
-
-    return res.status(403).json({ message: "Unauthorized" });
+    return res.status(200).json({
+      message: "Book updated successfully",
+    });
   } catch (error: any) {
-    console.error(error.message);
+    console.error("updateBookAdmin:", error.message);
     return res.status(500).json({ message: "Failed to update book" });
   }
 };

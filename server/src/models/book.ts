@@ -254,36 +254,52 @@ export class Book {
     }
   }
 
-  static async updateUserBookStatus(
-    user_id: string,
-    book_id: string,
-    status: string
-  ) {
-    try {
-      const result = await pool.query(
-        `UPDATE user_books SET status = $1 WHERE user_id = $2 AND book_id = $3 RETURNING *`,
-        [status, user_id, book_id]
-      );
-
-      return result.rows[0] || null;
-    } catch (error: any) {
-      console.error("Error updating user book status:", error.message);
-      throw new Error("Failed to update user book status");
-    }
-  }
-
-  static async updateUserBookStatusHelper(
+  static async updateUserBookStatusInternal(
     client: any,
-    book_id: string,
-    user_id: string,
+    user_book_id: string,
     status: string
   ) {
-    return client.query(
+    // 1. Update user_books
+    const result = await client.query(
       `UPDATE user_books
      SET status = $1
-     WHERE user_id = $2 AND book_id = $3`,
-      [status, user_id, book_id]
+     WHERE id = $2
+     RETURNING book_id`,
+      [status, user_book_id]
     );
+
+    if (result.rowCount === 0) {
+      throw new Error("user_books row not found");
+    }
+
+    const book_id = result.rows[0].book_id;
+
+    // 2. Determine state
+    const newState =
+      status === "reading" || status === "completed" ? "borrowed" : "free";
+
+    // 3. Update book state
+    await client.query(`UPDATE books SET state = $1 WHERE id = $2`, [
+      newState,
+      book_id,
+    ]);
+  }
+
+  static async updateUserBookStatus(user_book_id: string, status: string) {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      await this.updateUserBookStatusInternal(client, user_book_id, status);
+
+      await client.query("COMMIT");
+      return { success: true };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   static async updateBookCore(client: any, book_id: string, data: any) {
@@ -372,11 +388,10 @@ export class Book {
       }
 
       // Update user_books (user-specific status)
-      if (data.user_book_status && data.user_id) {
-        await this.updateUserBookStatusHelper(
+      if (data.user_book_status && data.user_book_id) {
+        await this.updateUserBookStatusInternal(
           client,
-          book_id,
-          data.user_id,
+          data.user_book_id,
           data.user_book_status
         );
       }
