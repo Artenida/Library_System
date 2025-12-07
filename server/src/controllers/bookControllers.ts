@@ -66,7 +66,7 @@ export const updateBook = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const deleteBookController = async (req: AuthRequest, res: Response) => {
+export const deleteBook = async (req: AuthRequest, res: Response) => {
   try {
     const { book_id } = req.params;
 

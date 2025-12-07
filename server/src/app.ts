@@ -4,6 +4,7 @@ import authRoutes from "./routes/authRoutes"
 import userRoutes from "./routes/userRoutes"
 import authorRoutes from "./routes/authorRoutes"
 import genreRoutes from './routes/genreRoutes'
+import bookRoutes from './routes/bookRoutes'
 
 const app = express();
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/author", authorRoutes)
 app.use("/api/genre", genreRoutes)
+app.use("/api/book/", bookRoutes)
 
 app.get('/', (req, res) => {
   res.send('Hello, TypeScript + Node.js server is running!');
