@@ -10,7 +10,7 @@ const router = Router();
 
 //router.get("/", authenticate, getBooks);
 router.get("/:id", authenticate, getSingleBook);
-router.post("/", authenticate, createBook);
+router.post("/", authenticate, isAdmin,createBook);
 router.put("/:id", authenticate, updateBook);
 router.delete("/:id", authenticate, isAdmin, deleteBook);
 
