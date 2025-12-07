@@ -68,7 +68,7 @@ export const updateBook = async (req: AuthRequest, res: Response) => {
 
 export const deleteBook = async (req: AuthRequest, res: Response) => {
   try {
-    const { book_id } = req.params;
+    const book_id = req.params.id;
 
     const success = await Book.deleteBook(book_id);
 
