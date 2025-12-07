@@ -31,7 +31,7 @@ export const getSingleBook = async (
   }
 };
 
-export const createBookController = async (req: AuthRequest, res: Response) => {
+export const createBook = async (req: AuthRequest, res: Response) => {
   try {
     const book = await Book.createBook(req.body);
     return res.status(201).json({ book });

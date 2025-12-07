@@ -1,11 +1,17 @@
 import { Router } from "express";
 import { authenticate, isAdmin } from "../middleware/authMiddleware";
-import { deleteBook, getSingleBook, updateBook } from "../controllers/bookControllers"
+import {
+  createBook,
+  deleteBook,
+  getSingleBook,
+  updateBook,
+} from "../controllers/bookControllers";
 const router = Router();
 
 //router.get("/", authenticate, getBooks);
-router.post("/", authenticate, getSingleBook);
+router.post("/:id", authenticate, getSingleBook);
+router.post("/", authenticate, createBook);
 router.put("/:id", authenticate, updateBook);
 router.delete("/:id", authenticate, isAdmin, deleteBook);
 
-export default router
+export default router;
