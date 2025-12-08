@@ -279,18 +279,29 @@ export class Book {
 
   static async deleteBook(book_id: string): Promise<boolean> {
     try {
-      if (!book_id) {
-        throw new Error("Book ID is required");
+      if (!book_id) throw new Error("Book ID is required");
+
+      // 1. Check current state
+      const check = await pool.query(`SELECT state FROM books WHERE id = $1`, [
+        book_id,
+      ]);
+
+      if (check.rows.length === 0) throw new Error("Book not found");
+
+      if (check.rows[0].state === "borrowed") {
+        throw new Error("Cannot delete a borrowed book");
       }
 
+      // 2. Soft delete
       const result = await pool.query(
-        `DELETE FROM books WHERE id = $1 RETURNING id AS book_id`,
+        `UPDATE books SET is_active = FALSE WHERE id = $1 RETURNING id AS book_id`,
         [book_id]
       );
+
       return result.rows.length > 0;
     } catch (error: any) {
-      console.error("Error deleting book:", error.message);
-      throw new Error("Failed to delete book");
+      console.error("Error soft deleting book:", error.message);
+      throw new Error("Failed to soft delete book");
     }
   }
 
@@ -538,7 +549,7 @@ export class Book {
       throw new Error("Failed to retrieve user books");
     }
   }
-  
+
   static async getUsersWithBooks(): Promise<IUserWithBooks[]> {
     const query = `
       SELECT
