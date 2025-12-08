@@ -191,3 +191,22 @@ export const getBooksByUser = async (req: AuthRequest, res: Response) => {
     });
   }
 };
+
+export const getAllUsersWithBooks = async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const users = await Book.getUsersWithBooks();
+
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users
+    });
+  } catch (err: any) {
+    console.error("getAllUsersWithBooks:", err.message);
+    return res.status(500).json({ message: "Failed to retrieve users" });
+  }
+};

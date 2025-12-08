@@ -12,6 +12,46 @@ export interface IBook {
   genres?: { genre_id: string; name: string }[];
 }
 
+export interface IUserWithBooks {
+  user_id: string;
+  username: string;
+  email: string;
+  role: "user" | "admin";
+
+  books: IUserBookWithDetails[];
+}
+
+export interface IUserBookWithDetails {
+  user_book_id: string;
+  status: string; // e.g., "reading", "completed", etc.
+  created_at: string;
+
+  book: IBookDetails;
+}
+
+export interface IBookDetails {
+  book_id: string;
+  title: string;
+  description: string;
+  published_date: number;
+  pages: number;
+  state: "free" | "borrowed" | "deleted";
+
+  authors: IAuthorInfo[];
+  genres: IGenreInfo[];
+}
+
+export interface IAuthorInfo {
+  author_id: string;
+  name: string;
+  birth_year: number;
+}
+
+export interface IGenreInfo {
+  genre_id: string;
+  name: string;
+}
+
 export interface CreateBookBody {
   title: string;
   description?: string;
@@ -497,5 +537,120 @@ export class Book {
       console.error("Error retrieving user books:", error.message);
       throw new Error("Failed to retrieve user books");
     }
+  }
+  
+  static async getUsersWithBooks(): Promise<IUserWithBooks[]> {
+    const query = `
+      SELECT
+        u.id AS user_id,
+        u.username,
+        u.email,
+        u.role,
+
+        ub.id AS user_book_id,
+        ub.status AS user_book_status,
+        ub.created_at AS user_book_created_at,
+
+        b.id AS book_id,
+        b.title,
+        b.description,
+        b.published_date,
+        b.pages,
+        b.state AS book_state,
+
+        a.id AS author_id,
+        a.name AS author_name,
+        a.birth_year AS author_birth_year,
+
+        g.id AS genre_id,
+        g.name AS genre_name
+
+      FROM users u
+      LEFT JOIN user_books ub ON u.id = ub.user_id
+      LEFT JOIN books b ON ub.book_id = b.id
+
+      LEFT JOIN book_authors ba ON b.id = ba.book_id
+      LEFT JOIN authors a ON ba.author_id = a.id
+
+      LEFT JOIN book_genres bg ON b.id = bg.book_id
+      LEFT JOIN genres g ON bg.genre_id = g.id
+
+      ORDER BY u.username ASC, ub.created_at DESC;
+    `;
+
+    const result = await pool.query(query);
+
+    // Build structured response
+    const usersMap: Record<string, IUserWithBooks> = {};
+
+    for (const row of result.rows) {
+      // Create parent user entry if missing
+      if (!usersMap[row.user_id]) {
+        usersMap[row.user_id] = {
+          user_id: row.user_id,
+          username: row.username,
+          email: row.email,
+          role: row.role,
+          books: [],
+        };
+      }
+
+      // If user has no user_books, continue
+      if (!row.user_book_id) continue;
+
+      // Check if user_book already exists
+      let userBook = usersMap[row.user_id].books.find(
+        (b) => b.user_book_id === row.user_book_id
+      );
+
+      // Create user_book entry if missing
+      if (!userBook) {
+        userBook = {
+          user_book_id: row.user_book_id,
+          status: row.user_book_status,
+          created_at: row.user_book_created_at,
+          book: {
+            book_id: row.book_id,
+            title: row.title,
+            description: row.description,
+            published_date: row.published_date,
+            pages: row.pages,
+            state: row.book_state,
+            authors: [],
+            genres: [],
+          },
+        };
+        usersMap[row.user_id].books.push(userBook);
+      }
+
+      // Add author if exists
+      if (row.author_id) {
+        const exists = userBook.book.authors.some(
+          (a) => a.author_id === row.author_id
+        );
+        if (!exists) {
+          userBook.book.authors.push({
+            author_id: row.author_id,
+            name: row.author_name,
+            birth_year: row.author_birth_year,
+          });
+        }
+      }
+
+      // Add genre if exists
+      if (row.genre_id) {
+        const exists = userBook.book.genres.some(
+          (g) => g.genre_id === row.genre_id
+        );
+        if (!exists) {
+          userBook.book.genres.push({
+            genre_id: row.genre_id,
+            name: row.genre_name,
+          });
+        }
+      }
+    }
+
+    return Object.values(usersMap);
   }
 }
