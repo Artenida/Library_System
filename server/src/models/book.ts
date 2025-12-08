@@ -3,8 +3,12 @@ import pool from "../config/databaseConnection";
 export interface IBook {
   book_id?: string;
   title: string;
+  description: string;
   published_date: number;
-  status?: "free" | "booked";
+  pages: string;
+  price: string;
+  cover_image_url: string;
+  state?: "free" | "borrowed";
   user?:
     | { user_id: string; name: string; email: string; role: string }[]
     | null;
@@ -92,8 +96,12 @@ const formatBooks = (
       map.set(book_id, {
         book_id: book_id,
         title: row.title,
+        description: row.description,
         published_date: row.published_date,
-        status: row.state,
+        state: row.state,
+        pages: row.pages,
+        price: row.price,
+        cover_image_url: row.cover_image_url,
         user: [],
         authors: [],
         genres: [],
@@ -165,7 +173,8 @@ export class Book {
 
       const query =
         BASE_QUERY +
-        ` ORDER BY b.title ASC, ub.created_at DESC LIMIT $1 OFFSET $2`;
+        ` WHERE b.is_active = TRUE
+          ORDER BY b.title ASC, ub.created_at DESC LIMIT $1 OFFSET $2`;
 
       const result = await pool.query(query, [limit, offset]);
       if (!result || !result.rows) {
@@ -196,7 +205,7 @@ export class Book {
         return null;
       }
 
-      const query = BASE_QUERY + ` WHERE b.id = $1 ORDER BY ub.created_at DESC`;
+      const query = BASE_QUERY + ` WHERE b.id = $1 AND b.is_active = TRUE ORDER BY ub.created_at DESC`;
 
       const result = await pool.query(query, [book_id]);
 
@@ -480,7 +489,7 @@ export class Book {
 
       // Check if the book exists and is free
       const bookCheck = await client.query(
-        `SELECT state FROM books WHERE id = $1`,
+        `SELECT state FROM books WHERE id = $1 AND is_active = TRUE`,
         [book_id]
       );
 
@@ -534,6 +543,7 @@ export class Book {
       ${BASE_QUERY}
       WHERE ub.user_id = $1
         AND ub.status != 'deleted'
+        AND b.is_active = TRUE
       ORDER BY ub.created_at DESC
     `;
 
@@ -578,7 +588,7 @@ export class Book {
 
       FROM users u
       LEFT JOIN user_books ub ON u.id = ub.user_id
-      LEFT JOIN books b ON ub.book_id = b.id
+      LEFT JOIN books b ON ub.book_id = b.id AND b.is_active = TRUE
 
       LEFT JOIN book_authors ba ON b.id = ba.book_id
       LEFT JOIN authors a ON ba.author_id = a.id
