@@ -477,13 +477,13 @@ export class Book {
     }
   }
 
-  static async getBooksByUser(user_id: string, includeDeleted: boolean) {
+  static async getBooksByUser(user_id: string) {
     try {
       const query = `
       ${BASE_QUERY}
-       WHERE ub.user_id = $1
-      ${includeDeleted ? "" : " AND ub.status != 'deleted'"}
-       ORDER BY ub.created_at DESC
+      WHERE ub.user_id = $1
+        AND ub.status != 'deleted'
+      ORDER BY ub.created_at DESC
     `;
 
       const result = await pool.query(query, [user_id]);
@@ -492,8 +492,7 @@ export class Book {
         return [];
       }
 
-      // Reuse your formatter to group authors/genres
-      return formatBooks(result.rows);
+      return formatBooks(result.rows, user_id, "user");
     } catch (error: any) {
       console.error("Error retrieving user books:", error.message);
       throw new Error("Failed to retrieve user books");

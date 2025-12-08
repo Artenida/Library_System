@@ -5,8 +5,8 @@ import {
   createBook,
   deleteBook,
   getBooks,
+  getBooksByUser,
   getSingleBook,
-  getUserBooks,
   updateBookAdmin,
   updateUserBookStatus,
 } from "../controllers/bookControllers";
@@ -15,7 +15,7 @@ const router = Router();
 //router.get("/", authenticate, getBooks);
 router.get("/", authenticate, getBooks);
 router.get("/:id", authenticate, getSingleBook);
-router.get("/user/books", authenticate, getUserBooks);
+router.get("/user/books", authenticate, getBooksByUser);
 router.post("/borrow", authenticate, borrowBook);
 router.put("/user/books/:user_book_id", authenticate, updateUserBookStatus);
 

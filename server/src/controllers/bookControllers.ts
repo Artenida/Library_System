@@ -94,7 +94,9 @@ export const updateUserBookStatus = async (req: AuthRequest, res: Response) => {
     }
 
     if (ownershipCheck.user_id !== req.user.id) {
-      return res.status(403).json({ message: "You cannot modify another user's book record" });
+      return res
+        .status(403)
+        .json({ message: "You cannot modify another user's book record" });
     }
 
     // 2️⃣ Perform the update now that access is safe
@@ -104,7 +106,6 @@ export const updateUserBookStatus = async (req: AuthRequest, res: Response) => {
       message: "Reading status updated",
       updated,
     });
-
   } catch (error: any) {
     console.error("updateUserBookStatus:", error.message);
     return res.status(500).json({ message: "Failed to update reading status" });
@@ -169,39 +170,14 @@ export const borrowBook = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getUserBooks = async (req: AuthRequest, res: Response) => {
+export const getBooksByUser = async (req: AuthRequest, res: Response) => {
   try {
-    const role = req.user?.role;
-    let user_id: string | undefined;
-    let includeDeleted = false;
-
-    if (role === "admin") {
-      // admin selects which user to view
-      user_id = req.query.user_id as string;
-
-      if (!user_id) {
-        return res.status(400).json({
-          success: false,
-          message: "user_id is required for admin requests",
-        });
-      }
-
-      includeDeleted = true;
-    } else {
-      // normal user → use authenticated ID
-      user_id = req.user?.id;
-
-      if (!user_id) {
-        return res.status(401).json({
-          success: false,
-          message: "Unauthorized",
-        });
-      }
-
-      includeDeleted = false;
+    const user_id = req.user?.id;
+    if (!user_id) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    const books = await Book.getBooksByUser(user_id, includeDeleted);
+    const books = await Book.getBooksByUser(user_id);
 
     return res.status(200).json({
       success: true,
