@@ -1,5 +1,5 @@
 import pool from "../config/databaseConnection";
-import {IBook, IUserWithBooks, CreateBookBody} from "../types/bookTypes"
+import { IBook, IUserWithBooks, CreateBookBody } from "../types/bookTypes";
 import { formatBooks } from "../utils/bookUtils";
 
 const BASE_QUERY = `SELECT b.id AS book_id, b.title, b.description, b.published_date, b.pages, b.price, b.cover_image_url, b.state,
@@ -25,16 +25,15 @@ export class Book {
     try {
       const offset = (page - 1) * limit; // Calculate offset for pagination
 
-      const query =
-        BASE_QUERY +
-        ` WHERE b.is_active = TRUE
-          ORDER BY b.title ASC, ub.created_at DESC LIMIT $1 OFFSET $2`;
+      const query = `
+        ${BASE_QUERY}
+        WHERE b.is_active = TRUE
+        GROUP BY b.id
+        ORDER BY b.title ASC
+        LIMIT $1 OFFSET $2
+      `;
 
       const result = await pool.query(query, [limit, offset]);
-      if (!result || !result.rows) {
-        console.warn("No rows returned from getBooks()");
-        return [];
-      }
 
       const books = formatBooks(result.rows, currentUserId, currentUserRole);
       if (books.length === 0) {
@@ -54,19 +53,12 @@ export class Book {
     currentUserRole?: string
   ): Promise<IBook | null> {
     try {
-      if (!book_id) {
-        console.warn("getSingleBook called without book_id");
-        return null;
-      }
-
-      const query = BASE_QUERY + ` WHERE b.id = $1 AND b.is_active = TRUE ORDER BY ub.created_at DESC`;
-
+      const query = `
+        ${BASE_QUERY}
+        WHERE b.id = $1 AND b.is_active = TRUE
+        GROUP BY b.id
+      `;
       const result = await pool.query(query, [book_id]);
-
-      if (!result || !result.rows || result.rows.length === 0) {
-        console.warn(`Book not found for id: ${book_id}`);
-        return null;
-      }
 
       const books = formatBooks(result.rows, currentUserId, currentUserRole);
 
@@ -82,16 +74,6 @@ export class Book {
 
     try {
       await client.query("BEGIN");
-
-      if (!data.title) {
-        throw new Error("Title is required");
-      }
-      if (!data.author_ids || data.author_ids.length === 0) {
-        throw new Error("At least one author is required");
-      }
-      if (!data.genre_ids || data.genre_ids.length === 0) {
-        throw new Error("At least one genre is required");
-      }
 
       const insertBookQuery = `INSERT INTO books (title, description, published_date, pages, price, cover_image_url, state) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id AS book_id, *`;
 
@@ -109,6 +91,7 @@ export class Book {
       const createdBook = bookResult.rows[0];
       const book_id = createdBook.book_id;
 
+      // Insert Authors
       for (const author_id of data.author_ids) {
         await client.query(
           `INSERT INTO book_authors (book_id, author_id) VALUES ($1, $2)`,
@@ -116,6 +99,7 @@ export class Book {
         );
       }
 
+      // Insert genres
       for (const genre_id of data.genre_ids) {
         await client.query(
           `INSERT INTO book_genres(book_id, genre_id) VALUES ($1, $2)`,
@@ -125,16 +109,90 @@ export class Book {
 
       await client.query("COMMIT");
 
-      const formattedQuery =
-        BASE_QUERY + ` WHERE b.id = $1 ORDER BY ub.created_at DESC`;
+      const formattedQuery = `${BASE_QUERY} WHERE b.id = $1 ORDER BY ub.created_at DESC`;
       const fullResult = await pool.query(formattedQuery, [book_id]);
+
       const books = formatBooks(fullResult.rows);
 
       return books[0];
     } catch (error: any) {
       await client.query("ROLLBACK");
-      console.error("Error creating book:", error.message);
       throw new Error("Failed to create book");
+    } finally {
+      client.release();
+    }
+  }
+
+  static async updateBook(book_id: string, data: any) {
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      // Update main book data
+      await client.query(
+        `UPDATE books
+        SET title = COALESCE($1, title),
+            description = COALESCE($2, description),
+            published_date = COALESCE($3, published_date),
+            pages = COALESCE($4, pages),
+            price = COALESCE($5, price),
+            cover_image_url = COALESCE($6, cover_image_url),
+            state = COALESCE($7, state)
+      WHERE id = $8`,
+        [
+          data.title || null,
+          data.description || null,
+          data.published_date || null,
+          data.pages || null,
+          data.price || null,
+          data.cover_image_url || null,
+          data.state || null,
+          book_id,
+        ]
+      );
+
+      // Update genres
+      if (data.genre_ids) {
+        await client.query(`DELETE FROM book_genres WHERE book_id = $1`, [
+          book_id,
+        ]);
+
+        for (const genre_id of data.genre_ids) {
+          await client.query(
+            `INSERT INTO book_genres (book_id, genre_id) VALUES ($1, $2)`,
+            [book_id, genre_id]
+          );
+        }
+      }
+
+      // Update authors
+      if (data.author_ids) {
+        await client.query(`DELETE FROM book_authors WHERE book_id = $1`, [
+          book_id,
+        ]);
+
+        for (const author_id of data.author_ids) {
+          await client.query(
+            `INSERT INTO book_authors (book_id, author_id) VALUES ($1, $2)`,
+            [book_id, author_id]
+          );
+        }
+      }
+
+      // Update user_books status if present
+      if (data.user_book_status && data.user_book_id) {
+        await this.updateUserBookStatusInternal(
+          client,
+          data.user_book_id,
+          data.user_book_status
+        );
+      }
+
+      await client.query("COMMIT");
+    } catch (error: any) {
+      await client.query("ROLLBACK");
+      throw new Error("Failed to update book: " + error.message);
     } finally {
       client.release();
     }
@@ -142,8 +200,6 @@ export class Book {
 
   static async deleteBook(book_id: string): Promise<boolean> {
     try {
-      if (!book_id) throw new Error("Book ID is required");
-
       // 1. Check current state
       const check = await pool.query(`SELECT state FROM books WHERE id = $1`, [
         book_id,
@@ -168,48 +224,6 @@ export class Book {
     }
   }
 
-  static async updateUserBookStatusInternal(
-    client: any,
-    user_book_id: string,
-    status: string
-  ) {
-    // 1. Update user_books
-    const result = await client.query(
-      `UPDATE user_books
-     SET status = $1
-     WHERE id = $2
-     RETURNING book_id`,
-      [status, user_book_id]
-    );
-
-    if (result.rowCount === 0) {
-      throw new Error("user_books row not found");
-    }
-
-    const book_id = result.rows[0].book_id;
-
-    // 2. Determine state
-    const newState =
-      status === "reading" || status === "completed" ? "borrowed" : "free";
-
-    // 3. Update book state
-    await client.query(`UPDATE books SET state = $1 WHERE id = $2`, [
-      newState,
-      book_id,
-    ]);
-  }
-
-  static async findUserBookById(user_book_id: string) {
-    const result = await pool.query(
-      `SELECT id, user_id, book_id, status 
-     FROM user_books 
-     WHERE id = $1`,
-      [user_book_id]
-    );
-
-    return result.rows[0] || null;
-  }
-
   static async updateUserBookStatus(user_book_id: string, status: string) {
     const client = await pool.connect();
     try {
@@ -222,109 +236,6 @@ export class Book {
     } catch (error) {
       await client.query("ROLLBACK");
       throw error;
-    } finally {
-      client.release();
-    }
-  }
-
-  static async updateBookCore(client: any, book_id: string, data: any) {
-    return client.query(
-      `UPDATE books
-      SET title = COALESCE($1, title),
-          description = COALESCE($2, description),
-          published_date = COALESCE($3, published_date),
-          pages = COALESCE($4, pages),
-          price = COALESCE($5, price),
-          cover_image_url = COALESCE($6, cover_image_url),
-          state = COALESCE($7, state)
-     WHERE id = $8`,
-      [
-        data.title || null,
-        data.description || null,
-        data.published_date || null,
-        data.pages || null,
-        data.price || null,
-        data.cover_image_url || null,
-        data.state || null,
-        book_id,
-      ]
-    );
-  }
-
-  static async updateBookGenres(
-    client: any,
-    book_id: string,
-    genre_ids: string[]
-  ) {
-    await client.query(`DELETE FROM book_genres WHERE book_id = $1`, [book_id]);
-
-    for (const genre_id of genre_ids) {
-      await client.query(
-        `INSERT INTO book_genres (book_id, genre_id) VALUES ($1, $2)`,
-        [book_id, genre_id]
-      );
-    }
-  }
-
-  static async updateBookAuthors(
-    client: any,
-    book_id: string,
-    author_ids: string[]
-  ) {
-    await client.query(`DELETE FROM book_authors WHERE book_id = $1`, [
-      book_id,
-    ]);
-
-    for (const author_id of author_ids) {
-      await client.query(
-        `INSERT INTO book_authors (book_id, author_id) VALUES ($1, $2)`,
-        [book_id, author_id]
-      );
-    }
-  }
-
-  static async updateBook(book_id: string, data: any) {
-    const client = await pool.connect();
-
-    try {
-      await client.query("BEGIN");
-
-      // Update main book data
-      if (
-        data.title ||
-        data.description ||
-        data.published_date ||
-        data.pages ||
-        data.price ||
-        data.cover_image_url ||
-        data.state
-      ) {
-        await this.updateBookCore(client, book_id, data);
-      }
-
-      // Update genres
-      if (data.genre_ids) {
-        await this.updateBookGenres(client, book_id, data.genre_ids);
-      }
-
-      // Update authors
-      if (data.author_ids) {
-        await this.updateBookAuthors(client, book_id, data.author_ids);
-      }
-
-      // Update user_books (user-specific status)
-      if (data.user_book_status && data.user_book_id) {
-        await this.updateUserBookStatusInternal(
-          client,
-          data.user_book_id,
-          data.user_book_status
-        );
-      }
-
-      await client.query("COMMIT");
-    } catch (error: any) {
-      await client.query("ROLLBACK");
-      throw new Error("Failed to update book: " + error.message);
     } finally {
       client.release();
     }
@@ -353,18 +264,6 @@ export class Book {
 
       if (bookCheck.rows[0].state === "booked") {
         throw new Error("Book is already borrowed!");
-      }
-
-      //Check if the user already borrowed the same book
-      const existing = await client.query(
-        `SELECT id FROM user_books 
-        WHERE user_id = $1 AND book_id = $2
-        AND status IN ('reading')`,
-        [user_id, book_id]
-      );
-
-      if (existing.rows.length > 0) {
-        throw new Error("User already has this book in reading status");
       }
 
       //Assign book to user
@@ -455,7 +354,6 @@ export class Book {
 
     const result = await pool.query(query);
 
-    // Build structured response
     const usersMap: Record<string, IUserWithBooks> = {};
 
     for (const row of result.rows) {
@@ -527,5 +425,48 @@ export class Book {
     }
 
     return Object.values(usersMap);
+  }
+
+  // HELPER METHODS
+  static async findUserBookById(user_book_id: string) {
+    const result = await pool.query(
+      `SELECT id, user_id, book_id, status 
+     FROM user_books 
+     WHERE id = $1`,
+      [user_book_id]
+    );
+
+    return result.rows[0] || null;
+  }
+
+  static async updateUserBookStatusInternal(
+    client: any,
+    user_book_id: string,
+    status: string
+  ) {
+    // 1. Update user_books
+    const result = await client.query(
+      `UPDATE user_books
+     SET status = $1
+     WHERE id = $2
+     RETURNING book_id`,
+      [status, user_book_id]
+    );
+
+    if (result.rowCount === 0) {
+      throw new Error("user_books row not found");
+    }
+
+    const book_id = result.rows[0].book_id;
+
+    // 2. Determine state
+    const newState =
+      status === "reading" || status === "completed" ? "borrowed" : "free";
+
+    // 3. Update book state
+    await client.query(`UPDATE books SET state = $1 WHERE id = $2`, [
+      newState,
+      book_id,
+    ]);
   }
 }
