@@ -8,6 +8,11 @@ export const getSingleBook = async (
 ): Promise<any> => {
   try {
     const { id } = req.params;
+    if (!id)
+      return res
+        .status(400)
+        .json({ success: false, message: "Book ID is required" });
+
     const currentUserId = (req.user as any)?.id;
     const currentUserRole = (req.user as any)?.role;
 
@@ -65,6 +70,18 @@ export const getBooksList = async (req: AuthRequest, res: Response) => {
 
 export const createBook = async (req: AuthRequest, res: Response) => {
   try {
+    const { title, author_ids, genre_ids } = req.body;
+
+    if (!title) return res.status(400).json({ message: "Title is required" });
+    if (!author_ids || !author_ids.length)
+      return res
+        .status(400)
+        .json({ message: "At least one author is required" });
+    if (!genre_ids || !genre_ids.length)
+      return res
+        .status(400)
+        .json({ message: "At least one genre is required" });
+
     const book = await Book.createBook(req.body);
     return res.status(201).json({ book });
   } catch (error: any) {
@@ -86,7 +103,7 @@ export const updateReadingStatus = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: "Status is required" });
     }
 
-    // 1️⃣ Validate that the record belongs to the logged-in user
+    // Check ownership
     const ownershipCheck = await Book.findUserBookById(user_book_id);
 
     if (!ownershipCheck) {
@@ -99,7 +116,6 @@ export const updateReadingStatus = async (req: AuthRequest, res: Response) => {
         .json({ message: "You cannot modify another user's book record" });
     }
 
-    // 2️⃣ Perform the update now that access is safe
     const updated = await Book.updateUserBookStatus(user_book_id, status);
 
     return res.status(200).json({
@@ -115,6 +131,8 @@ export const updateReadingStatus = async (req: AuthRequest, res: Response) => {
 export const updateBookByAdmin = async (req: AuthRequest, res: Response) => {
   try {
     const book_id = req.params.id;
+    if (!book_id)
+      return res.status(400).json({ message: "Book ID is required" });
 
     await Book.updateBook(book_id, req.body);
 
@@ -130,6 +148,8 @@ export const updateBookByAdmin = async (req: AuthRequest, res: Response) => {
 export const softDeleteBook = async (req: AuthRequest, res: Response) => {
   try {
     const book_id = req.params.id;
+    if (!book_id)
+      return res.status(400).json({ message: "Book ID is required" });
 
     const success = await Book.deleteBook(book_id);
 
@@ -192,18 +212,17 @@ export const listUserBooks = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const listAllUsersWithBooks = async (req: AuthRequest, res: Response) => {
+export const listAllUsersWithBooks = async (
+  req: AuthRequest,
+  res: Response
+) => {
   try {
-    if (req.user?.role !== "admin") {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
-
     const users = await Book.getUsersWithBooks();
 
     return res.status(200).json({
       success: true,
       count: users.length,
-      data: users
+      data: users,
     });
   } catch (err: any) {
     console.error("getAllUsersWithBooks:", err.message);
