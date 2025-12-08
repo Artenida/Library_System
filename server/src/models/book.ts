@@ -199,7 +199,7 @@ export class Book {
     ]);
   }
 
-  static async getUserBookById(user_book_id: string) {
+  static async findUserBookById(user_book_id: string) {
     const result = await pool.query(
       `SELECT id, user_id, book_id, status 
      FROM user_books 

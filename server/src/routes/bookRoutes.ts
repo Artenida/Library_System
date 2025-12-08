@@ -3,25 +3,25 @@ import { authenticate, isAdmin } from "../middleware/authMiddleware";
 import {
   borrowBook,
   createBook,
-  deleteBook,
-  getAllUsersWithBooks,
-  getBooks,
-  getBooksByUser,
+  getBooksList,
   getSingleBook,
-  updateBookAdmin,
-  updateUserBookStatus,
+  listAllUsersWithBooks,
+  listUserBooks,
+  softDeleteBook,
+  updateBookByAdmin,
+  updateReadingStatus,
 } from "../controllers/bookControllers";
 const router = Router();
 
-router.get("/", authenticate, getBooks);
+router.get("/", authenticate, getBooksList);
 router.get("/:id", authenticate, getSingleBook);
-router.get("/user/books", authenticate, getBooksByUser);
+router.get("/user/books", authenticate, listUserBooks);
 router.post("/borrow", authenticate, borrowBook);
-router.put("/user/books/:user_book_id", authenticate, updateUserBookStatus);
+router.put("/user/books/:user_book_id", authenticate, updateReadingStatus);
 
-router.get("/admin/users", authenticate, isAdmin, getAllUsersWithBooks);
+router.get("/admin/users", authenticate, isAdmin, listAllUsersWithBooks);
 router.post("/admin/books", authenticate, isAdmin, createBook);
-router.put("/admin/books/:id", authenticate, isAdmin, updateBookAdmin);
-router.delete("/admin/books/:id", authenticate, isAdmin, deleteBook);
+router.put("/admin/books/:id", authenticate, isAdmin, updateBookByAdmin);
+router.delete("/admin/books/:id", authenticate, isAdmin, softDeleteBook);
 
 export default router;

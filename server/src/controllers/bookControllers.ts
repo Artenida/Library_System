@@ -33,7 +33,7 @@ export const getSingleBook = async (
   }
 };
 
-export const getBooks = async (req: AuthRequest, res: Response) => {
+export const getBooksList = async (req: AuthRequest, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -73,7 +73,7 @@ export const createBook = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateUserBookStatus = async (req: AuthRequest, res: Response) => {
+export const updateReadingStatus = async (req: AuthRequest, res: Response) => {
   try {
     if (req.user?.role !== "user") {
       return res.status(403).json({ message: "Unauthorized" });
@@ -87,7 +87,7 @@ export const updateUserBookStatus = async (req: AuthRequest, res: Response) => {
     }
 
     // 1️⃣ Validate that the record belongs to the logged-in user
-    const ownershipCheck = await Book.getUserBookById(user_book_id);
+    const ownershipCheck = await Book.findUserBookById(user_book_id);
 
     if (!ownershipCheck) {
       return res.status(404).json({ message: "Record not found" });
@@ -112,7 +112,7 @@ export const updateUserBookStatus = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateBookAdmin = async (req: AuthRequest, res: Response) => {
+export const updateBookByAdmin = async (req: AuthRequest, res: Response) => {
   try {
     const book_id = req.params.id;
 
@@ -127,7 +127,7 @@ export const updateBookAdmin = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const deleteBook = async (req: AuthRequest, res: Response) => {
+export const softDeleteBook = async (req: AuthRequest, res: Response) => {
   try {
     const book_id = req.params.id;
 
@@ -170,7 +170,7 @@ export const borrowBook = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getBooksByUser = async (req: AuthRequest, res: Response) => {
+export const listUserBooks = async (req: AuthRequest, res: Response) => {
   try {
     const user_id = req.user?.id;
     if (!user_id) {
@@ -192,7 +192,7 @@ export const getBooksByUser = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getAllUsersWithBooks = async (req: AuthRequest, res: Response) => {
+export const listAllUsersWithBooks = async (req: AuthRequest, res: Response) => {
   try {
     if (req.user?.role !== "admin") {
       return res.status(403).json({ message: "Unauthorized" });
