@@ -86,12 +86,25 @@ export const updateUserBookStatus = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: "Status is required" });
     }
 
+    // 1️⃣ Validate that the record belongs to the logged-in user
+    const ownershipCheck = await Book.getUserBookById(user_book_id);
+
+    if (!ownershipCheck) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+
+    if (ownershipCheck.user_id !== req.user.id) {
+      return res.status(403).json({ message: "You cannot modify another user's book record" });
+    }
+
+    // 2️⃣ Perform the update now that access is safe
     const updated = await Book.updateUserBookStatus(user_book_id, status);
 
     return res.status(200).json({
       message: "Reading status updated",
       updated,
     });
+
   } catch (error: any) {
     console.error("updateUserBookStatus:", error.message);
     return res.status(500).json({ message: "Failed to update reading status" });

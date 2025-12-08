@@ -285,6 +285,17 @@ export class Book {
     ]);
   }
 
+  static async getUserBookById(user_book_id: string) {
+    const result = await pool.query(
+      `SELECT id, user_id, book_id, status 
+     FROM user_books 
+     WHERE id = $1`,
+      [user_book_id]
+    );
+
+    return result.rows[0] || null;
+  }
+
   static async updateUserBookStatus(user_book_id: string, status: string) {
     const client = await pool.connect();
     try {
