@@ -224,23 +224,6 @@ export class Book {
     }
   }
 
-  static async updateUserBookStatus(user_book_id: string, status: string) {
-    const client = await pool.connect();
-    try {
-      await client.query("BEGIN");
-
-      await this.updateUserBookStatusInternal(client, user_book_id, status);
-
-      await client.query("COMMIT");
-      return { success: true };
-    } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    } finally {
-      client.release();
-    }
-  }
-
   static async borrowBook(
     user_id: string,
     book_id: string,

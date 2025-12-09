@@ -8,20 +8,18 @@ import {
   listAllUsersWithBooks,
   listUserBooks,
   softDeleteBook,
-  updateBookByAdmin,
-  updateReadingStatus,
+  updateBook,
 } from "../controllers/bookControllers";
 const router = Router();
 
 router.get("/", authenticate, getBooksList);
-router.get("/:id", authenticate, getSingleBook);
 router.get("/user/books", authenticate, listUserBooks);
-router.post("/borrow", authenticate, borrowBook);
-router.put("/user/books/:user_book_id", authenticate, updateReadingStatus);
+router.post("/:book_id/borrow", authenticate, borrowBook);
+router.put("/:id", authenticate, updateBook);
+router.get("/:id", authenticate, getSingleBook);
 
+router.post("/admin", authenticate, createBook);
+router.delete("/admin/:id", authenticate, isAdmin, softDeleteBook);
 router.get("/admin/users", authenticate, isAdmin, listAllUsersWithBooks);
-router.post("/admin/books", authenticate, isAdmin, createBook);
-router.put("/admin/books/:id", authenticate, isAdmin, updateBookByAdmin);
-router.delete("/admin/books/:id", authenticate, isAdmin, softDeleteBook);
 
 export default router;

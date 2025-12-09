@@ -90,57 +90,42 @@ export const createBook = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateReadingStatus = async (req: AuthRequest, res: Response) => {
-  try {
-    if (req.user?.role !== "user") {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
-
-    const user_book_id = req.params.user_book_id;
-    const { status } = req.body;
-
-    if (!status) {
-      return res.status(400).json({ message: "Status is required" });
-    }
-
-    // Check ownership
-    const ownershipCheck = await Book.findUserBookById(user_book_id);
-
-    if (!ownershipCheck) {
-      return res.status(404).json({ message: "Record not found" });
-    }
-
-    if (ownershipCheck.user_id !== req.user.id) {
-      return res
-        .status(403)
-        .json({ message: "You cannot modify another user's book record" });
-    }
-
-    const updated = await Book.updateUserBookStatus(user_book_id, status);
-
-    return res.status(200).json({
-      message: "Reading status updated",
-      updated,
-    });
-  } catch (error: any) {
-    console.error("updateUserBookStatus:", error.message);
-    return res.status(500).json({ message: "Failed to update reading status" });
-  }
-};
-
-export const updateBookByAdmin = async (req: AuthRequest, res: Response) => {
+export const updateBook = async (req: AuthRequest, res: Response) => {
   try {
     const book_id = req.params.id;
     if (!book_id)
       return res.status(400).json({ message: "Book ID is required" });
 
+    const currentUserId = (req.user as any)?.id;
+    const currentUserRole = (req.user as any)?.role;
+
+    const { user_book_id } = req.body;
+
+    // 🔒 If user is NOT admin, enforce ownership check
+    if (currentUserRole !== "admin") {
+      if (user_book_id) {
+        const userBook = await Book.findUserBookById(user_book_id);
+
+        if (!userBook) {
+          return res.status(404).json({ message: "User book not found" });
+        }
+
+        if (userBook.user_id !== currentUserId) {
+          return res.status(403).json({
+            message: "You cannot update another user's book reservation",
+          });
+        }
+      }
+    }
+
+    // Continue with update
     await Book.updateBook(book_id, req.body);
 
     return res.status(200).json({
       message: "Book updated successfully",
     });
   } catch (error: any) {
-    console.error("updateBookAdmin:", error.message);
+    console.error("updateBook:", error.message);
     return res.status(500).json({ message: "Failed to update book" });
   }
 };
@@ -167,12 +152,17 @@ export const softDeleteBook = async (req: AuthRequest, res: Response) => {
 export const borrowBook = async (req: AuthRequest, res: Response) => {
   try {
     const user_id = req.user?.id;
-    const { book_id, from_date, to_date } = req.body;
+    const book_id = req.params.book_id;
+    const { from_date, to_date } = req.body;
 
-    if (!user_id || !book_id || !from_date) {
+    if (!user_id) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    if (!book_id || !from_date) {
       return res.status(400).json({
         success: false,
-        message: "user_id, book_id, and from_date are required",
+        message: "book_id (in route) and from_date are required",
       });
     }
     const result = await Book.borrowBook(user_id, book_id, from_date, to_date);
