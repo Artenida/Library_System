@@ -1,10 +1,11 @@
+import AppRoutes from "./routes/AppRoutes";
 
-function App() {
+const App = () => {
   return (
-    <div className="text-3xl">
-      Hello world
+    <div className="App">
+      <AppRoutes />
     </div>
-  )
-}
+  );
+};
 
 export default App;
