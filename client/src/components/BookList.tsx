@@ -20,48 +20,42 @@ interface BookListProps {
   userRole: string;
 }
 
+interface TableColumn {
+  key: string;
+  label: string;
+  showForRoles?: string[];
+}
+
 const BookList: React.FC<BookListProps> = ({ books, userRole }) => {
   const navigate = useNavigate();
-  
+
+  const columns: TableColumn[] = [
+    { key: "cover", label: "Cover" },
+    { key: "title", label: "Title" },
+    { key: "published", label: "Published", showForRoles: ["user"] },
+    { key: "pages", label: "Pages", showForRoles: ["user"] },
+    { key: "price", label: "Price", showForRoles: ["user"] },
+    { key: "authors", label: "Authors", showForRoles: ["user"] },
+    { key: "genres", label: "Genres", showForRoles: ["user"] },
+    { key: "status", label: "Status", showForRoles: ["user"] },
+    { key: "action", label: "Action" },
+  ];
+
   return (
     <TableContainer component={Paper} sx={{ mt: 3 }}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>
-              <strong>Cover</strong>
-            </TableCell>
-            <TableCell>
-              <strong>Title</strong>
-            </TableCell>
-            {/* <TableCell><strong>Description</strong></TableCell>  */}
-
-            {userRole === "user" && (
-              <>
-                <TableCell>
-                  <strong>Published</strong>
+            {columns.map((col) => {
+              if (col.showForRoles && !col.showForRoles.includes(userRole)) {
+                return null;
+              }
+              return (
+                <TableCell key={col.key}>
+                  <strong>{col.label}</strong>
                 </TableCell>
-                <TableCell>
-                  <strong>Pages</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Price</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Authors</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Genres</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Status</strong>
-                </TableCell>
-              </>
-            )}
-
-            <TableCell>
-              <strong>Action</strong>
-            </TableCell>
+              );
+            })}
           </TableRow>
         </TableHead>
 
@@ -70,11 +64,12 @@ const BookList: React.FC<BookListProps> = ({ books, userRole }) => {
             const isFree = book.state === "free";
 
             return (
-              <TableRow 
+              <TableRow
                 key={book.book_id}
                 hover
-                sx={{cursor: "pointer"}}
-                onClick={() => navigate(`/books/${book.book_id}`)}>
+                sx={{ cursor: "pointer" }}
+                onClick={() => navigate(`/books/${book.book_id}`)}
+              >
                 <TableCell>
                   {book.cover_image_url ? (
                     <img
