@@ -8,3 +8,12 @@ export const loginUserService = async (email: string, password: string) => {
 
   return data;
 };
+
+export const registerUserService = async (username: string, email: string, password: string) => {
+  const { data } = await axios.post("http://localhost:5000/api/auth/register", {
+    username,
+    email,
+    password,
+  });
+  return data; 
+};

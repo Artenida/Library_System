@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { loginUserService } from "../../services/authService";
+import { loginUserService, registerUserService } from "../../services/authService";
 
 export const loginUser = createAsyncThunk(
   "auth/login",
@@ -9,6 +9,20 @@ export const loginUser = createAsyncThunk(
       return response;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
+    }
+  }
+);
+
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async (
+    { username, email, password }: { username: string; email: string; password: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      return await registerUserService(username, email, password);
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || "Registration failed");
     }
   }
 );
