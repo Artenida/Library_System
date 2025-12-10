@@ -54,9 +54,8 @@ export class Book {
     try {
       const query = `
         ${BASE_QUERY}
-        WHERE b.id = $1 AND b.is_active = TRUE
-        GROUP BY b.id
-      `;
+        WHERE b.id = $1 AND b.is_active = TRUE`;
+
       const result = await pool.query(query, [book_id]);
 
       const books = formatBooks(result.rows, currentUserId, currentUserRole);

@@ -3,7 +3,11 @@ import type { IBook } from "../types/bookTypes";
 
 const API_URL = "http://localhost:5000/api/books";
 
-export const getBooks = async (token: string, page = 1, limit = 10): Promise<IBook[]> => {
+export const getBooks = async (
+  token: string,
+  page = 1,
+  limit = 10
+): Promise<IBook[]> => {
   const response = await axios.get(`${API_URL}?page=${page}&limit=${limit}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -11,4 +15,14 @@ export const getBooks = async (token: string, page = 1, limit = 10): Promise<IBo
   });
 
   return response.data.data;
+};
+
+export const getSingleBook = async (
+  id: string,
+  token?: string
+): Promise<any> => {
+  const response = await axios.get(`http://localhost:5000/api/books/${id}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  return response.data;
 };

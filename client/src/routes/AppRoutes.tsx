@@ -3,6 +3,7 @@ import ProtectedRoute from "./ProtectedRoutes";
 import Home from "../pages/user/Home";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
+import BookDetails from "../pages/BookDetails";
 
 const AppRoutes = () => {
   return (
@@ -15,6 +16,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/books/:id"
+          element={
+            <ProtectedRoute>
+              <BookDetails />
             </ProtectedRoute>
           }
         />
