@@ -6,8 +6,13 @@ import authorRoutes from "./routes/authorRoutes";
 import genreRoutes from "./routes/genreRoutes";
 import bookRoutes from "./routes/bookRoutes";
 import bookFilter from "./routes/bookFilterRoutes";
+import cors from "cors"
 
 const app = express();
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}))
 app.use(express.json());
 app.use(cookieParser());
 
