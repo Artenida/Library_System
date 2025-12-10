@@ -1,5 +1,5 @@
-import {createSlice} from "@reduxjs/toolkit"
-
+import { createSlice } from "@reduxjs/toolkit";
+import { loginUser } from "../thunks/authThunks";
 interface User {
   id: string;
   username: string;
@@ -37,10 +37,31 @@ const authSlice = createSlice({
 
       localStorage.removeItem("access_token");
       localStorage.removeItem("user");
+    },
   },
-  extraReducers: (builder) => {},
-}})
 
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.isLoggedIn = true;
+
+        localStorage.setItem("access_token", action.payload.token);
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+  },
+});
 
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;
