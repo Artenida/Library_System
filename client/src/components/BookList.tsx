@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { IBook } from "../types/bookTypes";
+import { useNavigate } from "react-router-dom";
 
 interface BookListProps {
   books: IBook[];
@@ -20,6 +21,8 @@ interface BookListProps {
 }
 
 const BookList: React.FC<BookListProps> = ({ books, userRole }) => {
+  const navigate = useNavigate();
+  
   return (
     <TableContainer component={Paper} sx={{ mt: 3 }}>
       <Table>
@@ -67,7 +70,11 @@ const BookList: React.FC<BookListProps> = ({ books, userRole }) => {
             const isFree = book.state === "free";
 
             return (
-              <TableRow key={book.book_id}>
+              <TableRow 
+                key={book.book_id}
+                hover
+                sx={{cursor: "pointer"}}
+                onClick={() => navigate(`/books/${book.book_id}`)}>
                 <TableCell>
                   {book.cover_image_url ? (
                     <img
