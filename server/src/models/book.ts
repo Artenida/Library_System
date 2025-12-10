@@ -28,7 +28,6 @@ export class Book {
       const query = `
         ${BASE_QUERY}
         WHERE b.is_active = TRUE
-        GROUP BY b.id
         ORDER BY b.title ASC
         LIMIT $1 OFFSET $2
       `;
