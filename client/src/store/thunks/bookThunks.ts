@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import { getBooks, getSingleBook } from "../../services/bookService";
+import { getBooks, getSingleBook, getUserBooks } from "../../services/bookService";
 import type { IBook } from "../../types/bookTypes";
 
 export const fetchBooks = createAsyncThunk<
@@ -34,5 +34,14 @@ export const fetchBookDetails = createAsyncThunk<
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch book");
     }
+  }
+);
+
+export const fetchUserBooks = createAsyncThunk(
+  "books/fetchUserBooks",
+  async (_, { getState }) => {
+    const token = (getState() as RootState).auth.token;
+    if (!token) throw new Error("User not authenticated");
+    return await getUserBooks(token);
   }
 );

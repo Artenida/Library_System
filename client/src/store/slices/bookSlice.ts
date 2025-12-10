@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { IBook } from "../../types/bookTypes";
-import { fetchBookDetails, fetchBooks } from "../thunks/bookThunks";
+import { fetchBookDetails, fetchBooks, fetchUserBooks } from "../thunks/bookThunks";
 
 interface BookState {
   books: IBook[];
@@ -44,6 +44,18 @@ const bookSlice = createSlice({
       })
       .addCase(fetchBookDetails.rejected, (state, action) => {
         state.error = action.payload as string;
+        state.loading = false;
+      })
+      .addCase(fetchUserBooks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserBooks.fulfilled, (state, action) => {
+        state.books = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchUserBooks.rejected, (state, action) => {
+        state.error = action.error.message || null;
         state.loading = false;
       });
   },

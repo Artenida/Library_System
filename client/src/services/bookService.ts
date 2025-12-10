@@ -26,3 +26,12 @@ export const getSingleBook = async (
   });
   return response.data;
 };
+
+export const getUserBooks = async (token: string): Promise<IBook[]> => {
+  const response = await axios.get(`${API_URL}/user/books`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data.data;
+};
