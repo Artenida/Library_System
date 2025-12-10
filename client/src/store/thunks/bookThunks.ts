@@ -1,10 +1,20 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import type { RootState } from "../store";
+import { getBooks } from "../../services/bookService";
 import type { IBook } from "../../types/bookTypes";
-import * as bookService from "../../services/bookService";
 
-export const fetchBooks = createAsyncThunk<IBook[], { page?: number; limit?: number }>(
+export const fetchBooks = createAsyncThunk<
+  IBook[],
+  { page: number; limit: number },
+  { state: RootState }
+>(
   "books/fetchBooks",
-  async ({ page = 1, limit = 10 }) => {
-    return await bookService.getBooks(page, limit);
+  async ({ page, limit }, { getState, rejectWithValue }) => {
+    try {
+      const token = (getState().auth.token)!;
+      return await getBooks(token, page, limit);
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
   }
 );
