@@ -4,9 +4,11 @@ import { persistReducer } from "redux-persist";
 import { persistStore } from "redux-persist";
 import authReducer from "./slices/authSlice";
 import booksReducer from "./slices/bookSlice";
+import userReducer from "./slices/userSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  user: userReducer,
   books: booksReducer, 
 });
 

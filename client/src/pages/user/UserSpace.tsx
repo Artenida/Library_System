@@ -6,27 +6,38 @@ import {
   Button,
   Stack,
 } from "@mui/material";
-import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import AppHeader from "../../components/AppHeader";
 import { useState } from "react";
+import { updateUserThunk } from "../../store/thunks/userThunks";
 
 const Profile = () => {
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
 
   const [username, setUsername] = useState(user?.username || "");
   const [email, setEmail] = useState(user?.email || "");
-  const [password, setPassword] = useState("");
+  const [password_hash, setPasswordHash] = useState("");
   const [role] = useState(user?.role || "user");
 
   const handleEditProfile = () => {
+    if (!user?.id) return;
+
     const updatedUser = {
       username,
       email,
       role,
-      ...(password && { password }),
+      ...(password_hash && { password_hash }),
     };
 
-    console.log("Edit profile data to send to backend:", updatedUser);
+    dispatch(updateUserThunk({ id: user.id, data: updatedUser }))
+      .unwrap()
+      .then(() => {
+        console.log("User updated successfully!");
+      })
+      .catch((error) => {
+        console.error("Update failed: ", error);
+      });
   };
 
   const handleDeleteProfile = () => {
@@ -70,8 +81,8 @@ const Profile = () => {
           <TextField
             label="New Password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={password_hash}
+            onChange={(e) => setPasswordHash(e.target.value)}
             placeholder="Leave empty to keep current password"
             fullWidth
           />
