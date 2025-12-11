@@ -22,7 +22,6 @@ const BookDetails = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const { book, loading, error } = useAppSelector((state) => state.books);
-  const user = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (id) dispatch(fetchBookDetails(id));
@@ -58,7 +57,7 @@ const BookDetails = () => {
 
   return (
     <Box sx={{ bgcolor: "#f7f7f7", minHeight: "100vh" }}>
-      <AppHeader username={user?.username} />
+      <AppHeader />
 
       <Container sx={{ mt: 3, mb: 3 }}>
         <Box

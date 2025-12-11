@@ -1,4 +1,3 @@
-// src/components/AppHeader.tsx
 import React from "react";
 import {
   AppBar,
@@ -17,13 +16,11 @@ import { logout } from "../store/slices/authSlice";
 interface AppHeaderProps {
   activeLink?: string;
   setActiveLink?: (link: string) => void;
-  username?: string;
 }
 
 const AppHeader: React.FC<AppHeaderProps> = ({
   activeLink,
   setActiveLink,
-  username,
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -71,7 +68,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           ))}
         </Box>
 
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 1 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Avatar
               alt={user?.username}
