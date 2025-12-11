@@ -99,22 +99,19 @@ export const updateBook = async (req: AuthRequest, res: Response) => {
     const currentUserId = (req.user as any)?.id;
     const currentUserRole = (req.user as any)?.role;
 
-    const { user_book_id } = req.body;
+    // If user is NOT admin, enforce ownership check
+    const userBook = req.body.user_books?.[0];
+    if (currentUserRole !== "admin" && userBook?.user_book_id) {
+      const dbUserBook = await Book.findUserBookById(userBook.user_book_id);
 
-    // 🔒 If user is NOT admin, enforce ownership check
-    if (currentUserRole !== "admin") {
-      if (user_book_id) {
-        const userBook = await Book.findUserBookById(user_book_id);
+      if (!dbUserBook) {
+        return res.status(404).json({ message: "User book not found" });
+      }
 
-        if (!userBook) {
-          return res.status(404).json({ message: "User book not found" });
-        }
-
-        if (userBook.user_id !== currentUserId) {
-          return res.status(403).json({
-            message: "You cannot update another user's book reservation",
-          });
-        }
+      if (dbUserBook.user_id !== currentUserId) {
+        return res.status(403).json({
+          message: "You cannot update another user's book reservation",
+        });
       }
     }
 
