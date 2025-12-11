@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { updateUserThunk } from "../thunks/userThunks";
+import { deleteUserThunk, updateUserThunk } from "../thunks/userThunks";
 
 interface UserState {
   user: any;
@@ -28,6 +28,20 @@ const userSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(updateUserThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(deleteUserThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteUserThunk.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+      })
+      .addCase(deleteUserThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

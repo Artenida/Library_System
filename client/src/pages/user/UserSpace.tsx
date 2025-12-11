@@ -9,10 +9,14 @@ import {
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import AppHeader from "../../components/AppHeader";
 import { useState } from "react";
-import { updateUserThunk } from "../../store/thunks/userThunks";
+import { deleteUserThunk, updateUserThunk } from "../../store/thunks/userThunks";
+import { logout } from "../../store/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  
   const user = useAppSelector((state) => state.auth.user);
 
   const [username, setUsername] = useState(user?.username || "");
@@ -41,7 +45,17 @@ const Profile = () => {
   };
 
   const handleDeleteProfile = () => {
-    console.log("Delete profile request for user_id:", user?.id);
+    if (!user?.id) return;
+
+  dispatch(deleteUserThunk(user.id))
+    .unwrap()
+    .then(() => {
+      dispatch(logout());
+      navigate("/login");
+    })
+    .catch((err: any) => {
+      console.error("Delete failed:", err);
+    });
   };
 
   return (
