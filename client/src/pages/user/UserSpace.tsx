@@ -8,13 +8,34 @@ import {
 } from "@mui/material";
 import { useAppSelector } from "../../store/hooks";
 import AppHeader from "../../components/AppHeader";
+import { useState } from "react";
 
 const Profile = () => {
   const user = useAppSelector((state) => state.auth.user);
 
+  const [username, setUsername] = useState(user?.username || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [password, setPassword] = useState("");
+  const [role] = useState(user?.role || "user");
+
+  const handleEditProfile = () => {
+    const updatedUser = {
+      username,
+      email,
+      role,
+      ...(password && { password }),
+    };
+
+    console.log("Edit profile data to send to backend:", updatedUser);
+  };
+
+  const handleDeleteProfile = () => {
+    console.log("Delete profile request for user_id:", user?.id);
+  };
+
   return (
     <Box>
-      <AppHeader/>
+      <AppHeader />
 
       <Box sx={{ p: 3, maxWidth: 500, mx: "auto" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
@@ -34,36 +55,45 @@ const Profile = () => {
         <Stack spacing={2}>
           <TextField
             label="Username"
-            value={user?.username || ""}
-            InputProps={{ readOnly: true }}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             fullWidth
           />
+
           <TextField
             label="Email"
-            value={user?.email || ""}
-            InputProps={{ readOnly: true }}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             fullWidth
           />
+
           <TextField
-            label="Password"
-            value="********"
+            label="New Password"
             type="password"
-            InputProps={{ readOnly: true }}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Leave empty to keep current password"
             fullWidth
           />
+
           <TextField
             label="Role"
-            value={user?.role || "user"}
-            InputProps={{ readOnly: true }}
+            value={role}
             fullWidth
+            InputProps={{ readOnly: true }}
           />
         </Stack>
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-          <Button variant="contained" color="primary">
-            Edit Profile
+          <Button variant="contained" onClick={handleEditProfile}>
+            Save Changes
           </Button>
-          <Button variant="outlined" color="error">
+
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleDeleteProfile}
+          >
             Delete Profile
           </Button>
         </Box>
