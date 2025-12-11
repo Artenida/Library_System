@@ -153,41 +153,43 @@ export class Book {
       );
 
       // Update genres
-      if (data.genre_ids) {
+      if (data.genres?.length) {
         await client.query(`DELETE FROM book_genres WHERE book_id = $1`, [
           book_id,
         ]);
 
-        for (const genre_id of data.genre_ids) {
+        for (const g of data.genres) {
           await client.query(
             `INSERT INTO book_genres (book_id, genre_id) VALUES ($1, $2)`,
-            [book_id, genre_id]
+            [book_id, g.genre_id]
           );
         }
       }
 
       // Update authors
-      if (data.author_ids) {
+      if (data.authors?.length) {
         await client.query(`DELETE FROM book_authors WHERE book_id = $1`, [
           book_id,
         ]);
 
-        for (const author_id of data.author_ids) {
+        for (const a of data.authors) {
           await client.query(
             `INSERT INTO book_authors (book_id, author_id) VALUES ($1, $2)`,
-            [book_id, author_id]
+            [book_id, a.author_id]
           );
         }
       }
 
       // Update user_books status if present
-      if (data.user_book_status && data.user_book_id) {
-        await this.updateUserBookStatusInternal(
-          client,
-          data.user_book_id,
-          data.user_book_status
-        );
-      }
+     const userBook = data.user_books?.[0];
+    if (userBook?.user_book_id && userBook?.status) {
+      await this.updateUserBookStatusInternal(
+        client,
+        userBook.user_book_id,
+        userBook.status
+      );
+    }
+
 
       await client.query("COMMIT");
     } catch (error: any) {
