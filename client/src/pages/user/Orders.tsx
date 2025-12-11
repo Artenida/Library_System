@@ -59,14 +59,9 @@ const Orders = () => {
       <AppHeader
         activeLink={activeLink}
         setActiveLink={setActiveLink}
-        username={user?.username}
       />
 
       <Container sx={{ mt: 3, mb: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          My Orders
-        </Typography>
-
         {loading ? (
           <Box display="flex" justifyContent="center" mt={5}>
             <CircularProgress />
