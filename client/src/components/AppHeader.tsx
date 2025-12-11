@@ -4,8 +4,8 @@ import { AppBar, Toolbar, Typography, Box, Button, Avatar } from "@mui/material"
 import { useNavigate } from "react-router-dom";
 
 interface AppHeaderProps {
-  activeLink: string;
-  setActiveLink: (link: string) => void;
+  activeLink?: string;
+  setActiveLink?: (link: string) => void;
   username?: string;
 }
 
