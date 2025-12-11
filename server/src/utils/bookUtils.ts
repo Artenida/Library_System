@@ -1,4 +1,4 @@
-import {IBook} from "../types/bookTypes"
+import { IBook } from "../types/bookTypes";
 
 export const formatBooks = (
   rows: any[],
@@ -21,6 +21,7 @@ export const formatBooks = (
         price: row.price,
         cover_image_url: row.cover_image_url,
         user: [],
+        user_books: [],
         authors: [],
         genres: [],
       });
@@ -72,6 +73,32 @@ export const formatBooks = (
           genre_id: row.genre_id,
           name: row.genre_name,
         });
+      }
+    }
+
+    if (row.user_book_id) {
+      const exists = book.user_books!.some(
+        (ub) => ub.user_book_id === row.user_book_id
+      );
+
+      if (!exists) {
+        if (currentUserRole === "admin" || row.user_id === currentUserId) {
+          book.user_books!.push({
+            user_book_id: row.user_book_id,
+            status: row.status,
+            created_at: row.created_at,
+            from_date: row.from_date,
+            to_date: row.to_date,
+          });
+        } else {
+          book.user_books!.push({
+            user_book_id: "",
+            status: "",
+            created_at: "",
+            from_date: "",
+            to_date: "",
+          });
+        }
       }
     }
   });
