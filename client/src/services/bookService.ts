@@ -35,3 +35,12 @@ export const getUserBooks = async (token: string): Promise<IBook[]> => {
   });
   return response.data.data;
 };
+
+export const updateBookService = async (book: IBook, token: string): Promise<IBook> => {
+  const response = await axios.put(`${API_URL}/${book.book_id}`, book, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data.data;
+};

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Container, Typography, CircularProgress } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { fetchUserBooks } from "../../store/thunks/bookThunks";
+import { fetchUserBooks, updateBook } from "../../store/thunks/bookThunks";
 import OrdersTable from "../../components/OrdersTable";
 import AppHeader from "../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
@@ -14,24 +14,40 @@ const Orders = () => {
   const { books, loading, error } = useAppSelector((state) => state.books);
   const user = useAppSelector((state) => state.auth.user);
 
-  const [current_book, setCurrentBook] = useState<IBook[]>([]);
-
   useEffect(() => {
     dispatch(fetchUserBooks());
   }, [dispatch]);
 
-  const handleEdit = (updatedBook: IBook) => {
-    console.log("SEND TO BACKEND:", updatedBook);
-    setCurrentBook((prev) =>
-      prev.map((b) => (b.book_id === updatedBook.book_id ? updatedBook : b))
-    );
+  const handleEdit = async (updatedBook: IBook) => {
+    try {
+      console.log("Sending to backend:", updatedBook);
+
+      await dispatch(updateBook(updatedBook)).unwrap();
+
+      dispatch(fetchUserBooks());
+    } catch (error) {
+      console.error("Failed to update book:", error);
+    }
   };
 
-  const handleDelete = (updatedBook: IBook) => {
-    console.log("Delete book:", updatedBook);
-    setCurrentBook((prev) =>
-      prev.map((b) => (b.book_id === updatedBook.book_id ? updatedBook : b))
-    );
+  const handleDelete = async (book: IBook) => {
+    try {
+      console.log("Soft deleting book:", book.book_id);
+
+      const deletedBook: IBook = {
+        ...book,
+        user_books: book.user_books?.map((ub) => ({
+          ...ub,
+          status: "deleted",
+        })),
+      };
+
+      await dispatch(updateBook(deletedBook)).unwrap();
+
+      dispatch(fetchUserBooks());
+    } catch (error) {
+      console.error("Failed to soft delete book:", error);
+    }
   };
 
   const handleRowClick = (book: IBook) => {
