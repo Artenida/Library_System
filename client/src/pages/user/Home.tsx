@@ -1,96 +1,34 @@
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  Button,
-  Avatar,
-  Container,
-  CircularProgress,
-  TextField,
-} from "@mui/material";
+import { Box, Container, CircularProgress, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchBooks } from "../../store/thunks/bookThunks";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../store/store";
-import BookList from "../../components/BookList";
+import LibraryTable from "../../components/LibraryTable";
+import AppHeader from "../../components/AppHeader";
+import { useNavigate } from "react-router-dom";
+import type { IBook } from "../../types/bookTypes";
 
 const Home = () => {
   const [activeLink, setActiveLink] = useState("Library");
-
   const dispatch = useAppDispatch();
-  const { books, loading } = useSelector((state: RootState) => state.books);
-
+  const navigate = useNavigate();
+  const { books, loading } = useAppSelector((state) => state.books);
   const user = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
     dispatch(fetchBooks({ page: 1, limit: 10 }));
   }, [dispatch]);
 
+  const handleRowClick = (book: IBook) => {
+    navigate(`/books/${book.book_id}`);
+  };
+
   return (
     <Box sx={{ bgcolor: "#f7f7f7", minHeight: "100vh" }}>
-      <AppBar position="static" sx={{ bgcolor: "#fff" }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: "bold",
-              color: "#1976d2",
-              fontFamily: "'Roboto Slab', serif",
-              cursor: "pointer",
-            }}
-          >
-            Books
-          </Typography>
-
-          <Box sx={{ display: "flex", gap: 3 }}>
-            {["Library", "Orders"].map((text) => (
-              <Button
-                key={text}
-                onClick={() => setActiveLink(text)}
-                sx={{
-                  color: activeLink === text ? "#1976d2" : "#000",
-                  textTransform: "none",
-                  fontFamily: "'Roboto', sans-serif",
-                  fontWeight: 500,
-                  borderRadius: "8px",
-                  bgcolor: "inherit",
-                }}
-              >
-                {text}
-              </Button>
-            ))}
-          </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography
-              variant="body2"
-              sx={{
-                fontFamily: "'Roboto', sans-serif",
-                fontWeight: 500,
-                color: "#000",
-              }}
-            >
-              {user?.username}
-            </Typography>
-            <Avatar
-              alt="Profile"
-              src="https://via.placeholder.com/40"
-              sx={{
-                width: 36,
-                height: 36,
-                cursor: "pointer",
-                border: "2px solid #ffff",
-                transition: "transform 0.2s",
-                "&:hover": {
-                  transform: "scale(1.1)",
-                },
-              }}
-            />
-          </Box>
-        </Toolbar>
-      </AppBar>
+      <AppHeader
+        activeLink={activeLink}
+        setActiveLink={setActiveLink}
+        username={user?.username}
+      />
 
       <Container
         sx={{
@@ -124,7 +62,7 @@ const Home = () => {
             <CircularProgress />
           </Box>
         ) : (
-          <BookList books={books} userRole="user" />
+          <LibraryTable books={books} onRowClick={handleRowClick} />
         )}
       </Container>
     </Box>
