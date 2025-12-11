@@ -74,7 +74,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         <Box sx={{ p: 3 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Avatar
-              alt={username}
+              alt={user?.username}
               src="https://via.placeholder.com/80"
               sx={{
                 width: 36,
@@ -84,6 +84,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                 transition: "transform 0.2s",
                 "&:hover": { transform: "scale(1.1)" },
               }}
+              onClick={() => navigate("/profile")}
             />
             <Box>
               <Typography
@@ -94,6 +95,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                   color: "#000",
                   cursor: "pointer",
                 }}
+                onClick={() => navigate("/profile")}
               >
                 {user?.username}
               </Typography>
