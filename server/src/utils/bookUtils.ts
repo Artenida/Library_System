@@ -1,5 +1,19 @@
 import { IBook } from "../types/bookTypes";
 
+export const BASE_QUERY = `SELECT b.id AS book_id, b.title, b.description, b.published_date, b.pages, b.price, b.cover_image_url, b.state,
+                    ub.id AS user_book_id, ub.status, ub.created_at, ub.from_date, ub.to_date,
+                    u.id AS user_id, u.username, u.email, u.role,
+                    a.id AS author_id, a.name AS author_name, a.birth_year,
+                    g.id AS genre_id, g.name AS genre_name
+                    
+                    FROM books b
+                    LEFT JOIN user_books ub ON ub.book_id = b.id
+                    LEFT JOIN users u ON ub.user_id = u.id
+                    LEFT JOIN book_authors ba ON ba.book_id = b.id
+                    LEFT JOIN authors a ON ba.author_id = a.id
+                    LEFT JOIN book_genres bg ON bg.book_id = b.id
+                    LEFT JOIN genres g ON bg.genre_id = g.id`;
+
 export const formatBooks = (
   rows: any[],
   currentUserId?: string,
@@ -61,7 +75,7 @@ export const formatBooks = (
         book.authors!.push({
           author_id: row.author_id,
           name: row.author_name,
-          birth_year: row.author_birth_year,
+          birth_year: row.birth_year,
         });
       }
     }

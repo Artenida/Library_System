@@ -1,20 +1,8 @@
 import pool from "../config/databaseConnection";
 import { IBook, IUserWithBooks, CreateBookBody } from "../types/bookTypes";
 import { formatBooks } from "../utils/bookUtils";
+import {BASE_QUERY} from "../utils/bookUtils"
 
-const BASE_QUERY = `SELECT b.id AS book_id, b.title, b.description, b.published_date, b.pages, b.price, b.cover_image_url, b.state,
-                    ub.id AS user_book_id, ub.status, ub.created_at, ub.from_date, ub.to_date,
-                    u.id AS user_id, u.username, u.email, u.role,
-                    a.id AS author_id, a.name AS author_name, a.birth_year,
-                    g.id AS genre_id, g.name AS genre_name
-                    
-                    FROM books b
-                    LEFT JOIN user_books ub ON ub.book_id = b.id
-                    LEFT JOIN users u ON ub.user_id = u.id
-                    LEFT JOIN book_authors ba ON ba.book_id = b.id
-                    LEFT JOIN authors a ON ba.author_id = a.id
-                    LEFT JOIN book_genres bg ON bg.book_id = b.id
-                    LEFT JOIN genres g ON bg.genre_id = g.id`;
 export class Book {
   static async getBooks(
     page: number,
