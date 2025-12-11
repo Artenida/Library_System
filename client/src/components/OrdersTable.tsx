@@ -63,6 +63,38 @@ const OrdersTable: React.FC<Props> = ({
       ),
     },
     {
+      key: "reading_status",
+      label: "Reading Status",
+      render: (b: IBook) => {
+        const ub = b.user_books?.[0];
+        if (!ub || !ub.status) {
+          return (
+            <Typography variant="body2" color="text.secondary">
+              No status
+            </Typography>
+          );
+        }
+
+        return (
+          <Chip
+            label={ub.status}
+            size="small"
+            color={
+              ub.status === "completed"
+                ? "success"
+                : ub.status === "reading"
+                ? "primary"
+                : ub.status === "borrowed"
+                ? "warning"
+                : ub.status === "returned"
+                ? "info"
+                : "default"
+            }
+          />
+        );
+      },
+    },
+    {
       key: "action",
       label: "Action",
       render: (b: IBook) => (
