@@ -37,20 +37,21 @@ const BookList: React.FC<BookListProps> = ({ books, columns, onRowClick }) => {
         </TableHead>
 
         <TableBody>
-          {books.map((book) => (
-            <TableRow
-              key={book.book_id}
-              hover
-              sx={{ cursor: onRowClick ? "pointer" : "default" }}
-              onClick={() => onRowClick?.(book)}
-            >
-              {columns.map((col) => (
-                <TableCell key={col.key}>
-                  {col.render ? col.render(book) : (book as any)[col.key]}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+          {Array.isArray(books) &&
+            books.map((book) => (
+              <TableRow
+                key={book.book_id}
+                hover
+                sx={{ cursor: onRowClick ? "pointer" : "default" }}
+                onClick={() => onRowClick?.(book)}
+              >
+                {columns.map((col) => (
+                  <TableCell key={col.key}>
+                    {col.render ? col.render(book) : (book as any)[col.key]}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </TableContainer>

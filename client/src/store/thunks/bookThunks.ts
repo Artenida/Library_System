@@ -1,7 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import { borrowBookService, getBooks, getSingleBook, getUserBooks, updateBookService } from "../../services/bookService";
+import {
+  borrowBookService,
+  getBooks,
+  getSingleBook,
+  getUserBooks,
+  searchBooksByGenre,
+  updateBookService,
+} from "../../services/bookService";
 import type { IBook } from "../../types/bookTypes";
+import { isAxiosError } from "axios";
 
 export const fetchBooks = createAsyncThunk<
   IBook[],
@@ -46,11 +54,7 @@ export const fetchUserBooks = createAsyncThunk(
   }
 );
 
-export const updateBook = createAsyncThunk<
-  IBook,
-  IBook,
-  { state: RootState }
->(
+export const updateBook = createAsyncThunk<IBook, IBook, { state: RootState }>(
   "books/updateBook",
   async (book, { getState, rejectWithValue }) => {
     try {
@@ -80,3 +84,20 @@ export const borrowBook = createAsyncThunk<
   }
 );
 
+export const searchBooks = createAsyncThunk<
+  IBook[],
+  { genre: string },
+  { state: RootState }
+>("books/searchBooks", async ({ genre }, { getState, rejectWithValue }) => {
+  try {
+    const token = getState().auth.token!;
+    const data = await searchBooksByGenre(genre, token);
+
+    return data.books;
+  } catch (err: unknown) {
+    if (isAxiosError(err)) {
+      return rejectWithValue(err.response?.data || "Search failed");
+    }
+    return rejectWithValue("Unknown error");
+  }
+});

@@ -36,7 +36,10 @@ export const getUserBooks = async (token: string): Promise<IBook[]> => {
   return response.data.data;
 };
 
-export const updateBookService = async (book: IBook, token: string): Promise<IBook> => {
+export const updateBookService = async (
+  book: IBook,
+  token: string
+): Promise<IBook> => {
   const response = await axios.put(`${API_URL}/${book.book_id}`, book, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -50,12 +53,15 @@ export const borrowBookService = async (
   data: { from_date: string; to_date?: string },
   token: string
 ): Promise<IBook> => {
-  const response = await axios.post(
-    `${API_URL}/${book_id}/borrow`,
-    data,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+  const response = await axios.post(`${API_URL}/${book_id}/borrow`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return response.data.data;
+};
+
+export const searchBooksByGenre = async (genre: string, token: string) => {
+  const response = await axios.get(`${API_URL}/filter/filter?genre=${genre}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
 };

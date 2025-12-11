@@ -5,6 +5,7 @@ import {
   fetchBookDetails,
   fetchBooks,
   fetchUserBooks,
+  searchBooks,
   updateBook,
 } from "../thunks/bookThunks";
 
@@ -15,6 +16,9 @@ interface BookState {
   error: string | null;
   updated_book: IBook | null;
   updateError: string | null;
+  searchResults: IBook[];
+  isSearching: boolean;
+  searchError: string | null;
 }
 
 const initialState: BookState = {
@@ -24,12 +28,19 @@ const initialState: BookState = {
   error: null,
   updated_book: null,
   updateError: null,
+  searchResults: [],
+  isSearching: false,
+  searchError: null,
 };
 
 const bookSlice = createSlice({
   name: "books",
   initialState,
-  reducers: {},
+  reducers: {
+    clearSearch(state) {
+      state.searchResults = [];
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchBooks.pending, (state) => {
@@ -95,8 +106,23 @@ const bookSlice = createSlice({
       .addCase(borrowBook.rejected, (state, action) => {
         state.loading = false;
         state.updateError = action.payload as string;
+      })
+
+      .addCase(searchBooks.pending, (state) => {
+        state.isSearching = true;
+        state.searchError = null;
+      })
+      .addCase(searchBooks.fulfilled, (state, action) => {
+        state.isSearching = false;
+        state.searchResults = action.payload;
+      })
+      .addCase(searchBooks.rejected, (state, action) => {
+        state.isSearching = false;
+        state.searchError = action.payload as string;
+        state.searchResults = [];
       });
   },
 });
 
+export const { clearSearch } = bookSlice.actions;
 export default bookSlice.reducer;
