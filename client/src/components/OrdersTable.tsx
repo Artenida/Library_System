@@ -11,7 +11,12 @@ interface Props {
   onRowClick?: (book: IBook) => void;
 }
 
-const OrdersTable: React.FC<Props> = ({ books, onEdit, onDelete, onRowClick }) => {
+const OrdersTable: React.FC<Props> = ({
+  books,
+  onEdit,
+  onDelete,
+  onRowClick,
+}) => {
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedBook, setSelectedBook] = useState<IBook | null>(null);
 
@@ -24,7 +29,12 @@ const OrdersTable: React.FC<Props> = ({ books, onEdit, onDelete, onRowClick }) =
           <img
             src={b.cover_image_url}
             alt={b.title}
-            style={{ width: 60, height: 80, objectFit: "cover", borderRadius: 4 }}
+            style={{
+              width: 60,
+              height: 80,
+              objectFit: "cover",
+              borderRadius: 4,
+            }}
           />
         ) : (
           <Typography variant="body2" color="text.secondary">
@@ -77,10 +87,10 @@ const OrdersTable: React.FC<Props> = ({ books, onEdit, onDelete, onRowClick }) =
                 ? "success"
                 : ub.status === "reading"
                 ? "primary"
-                : ub.status === "borrowed"
-                ? "warning"
                 : ub.status === "returned"
                 ? "info"
+                : ub.status === "deleted"
+                ? "error"
                 : "default"
             }
           />

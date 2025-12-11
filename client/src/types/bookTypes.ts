@@ -13,7 +13,7 @@ export interface IBook {
   user_books?:
     | {
         user_book_id: string;
-        status: "" | "reading" | "completed" | "borrowed" | "returned";
+        status: "" | "reading" | "completed" | "returned" | "deleted";
         created_at: string;
         from_date: string;
         to_date: string;

@@ -18,9 +18,9 @@ interface Props {
 }
 
 const EditOrderModal: React.FC<Props> = ({ open, book, onClose, onSave }) => {
-  type ReadingStatus = "" | "reading" | "completed" | "borrowed" | "returned";
+  type ReadingStatus = "" | "reading" | "completed" | "returned" | "deleted";
   const [status, setStatus] = useState<
-    "" | "reading" | "completed" | "borrowed" | "returned"
+    "" | "reading" | "completed" | "returned" | "deleted"
   >("");
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const EditOrderModal: React.FC<Props> = ({ open, book, onClose, onSave }) => {
           value={status}
           onChange={(e) => setStatus(e.target.value as ReadingStatus)}
         >
-          {["reading", "completed", "borrowed", "returned"].map((s) => (
+          {["reading", "completed", "returned", "deleted"].map((s) => (
             <MenuItem key={s} value={s}>
               {s}
             </MenuItem>
