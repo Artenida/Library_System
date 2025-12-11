@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { IBook } from "../../types/bookTypes";
 import {
+  borrowBook,
   fetchBookDetails,
   fetchBooks,
   fetchUserBooks,
@@ -82,6 +83,18 @@ const bookSlice = createSlice({
       .addCase(updateBook.rejected, (state, action) => {
         state.updateError = action.error.message || null;
         state.loading = false;
+      })
+
+      .addCase(borrowBook.pending, (state) => {
+        state.loading = true;
+        state.updateError = null;
+      })
+      .addCase(borrowBook.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(borrowBook.rejected, (state, action) => {
+        state.loading = false;
+        state.updateError = action.payload as string;
       });
   },
 });

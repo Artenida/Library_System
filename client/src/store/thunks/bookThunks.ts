@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import { getBooks, getSingleBook, getUserBooks, updateBookService } from "../../services/bookService";
+import { borrowBookService, getBooks, getSingleBook, getUserBooks, updateBookService } from "../../services/bookService";
 import type { IBook } from "../../types/bookTypes";
 
 export const fetchBooks = createAsyncThunk<
@@ -62,3 +62,21 @@ export const updateBook = createAsyncThunk<
     }
   }
 );
+
+export const borrowBook = createAsyncThunk<
+  IBook,
+  { book_id: string; from_date: string; to_date?: string },
+  { state: RootState }
+>(
+  "books/borrowBook",
+  async ({ book_id, from_date, to_date }, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().auth.token;
+      if (!token) throw new Error("User not authenticated");
+      return await borrowBookService(book_id, { from_date, to_date }, token);
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+

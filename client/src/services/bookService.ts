@@ -44,3 +44,18 @@ export const updateBookService = async (book: IBook, token: string): Promise<IBo
   });
   return response.data.data;
 };
+
+export const borrowBookService = async (
+  book_id: string,
+  data: { from_date: string; to_date?: string },
+  token: string
+): Promise<IBook> => {
+  const response = await axios.post(
+    `${API_URL}/${book_id}/borrow`,
+    data,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return response.data.data;
+};

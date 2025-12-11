@@ -1,7 +1,10 @@
 import { Box, Container, CircularProgress, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { fetchBooks } from "../../store/thunks/bookThunks";
+import {
+  borrowBook,
+  fetchBooks,
+} from "../../store/thunks/bookThunks";
 import LibraryTable from "../../components/LibraryTable";
 import AppHeader from "../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +23,23 @@ const Home = () => {
 
   const handleRowClick = (book: IBook) => {
     navigate(`/books/${book.book_id}`);
+  };
+
+  const handleTakeBook = async (book: IBook) => {
+    try {
+      const from_date = new Date().toISOString();
+      const to_date = undefined;
+
+      if (!book.book_id) return "Provide book id";
+
+      await dispatch(
+        borrowBook({ book_id: book.book_id, from_date, to_date })
+      ).unwrap();
+
+      dispatch(fetchBooks({ page: 1, limit: 10 }));
+    } catch (error) {
+      console.error("Failed to borrow book:", error);
+    }
   };
 
   return (
@@ -62,7 +82,7 @@ const Home = () => {
             <CircularProgress />
           </Box>
         ) : (
-          <LibraryTable books={books} onRowClick={handleRowClick} />
+          <LibraryTable books={books} onRowClick={handleRowClick} onTake={handleTakeBook}/>
         )}
       </Container>
     </Box>
