@@ -1,21 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Box, Typography, Chip } from "@mui/material";
 import BookList from "./BookList";
 import type { IBook } from "../types/bookTypes";
+import EditOrderModal from "./EditOrderModal";
 
 interface Props {
   books: IBook[];
-  onEdit?: (book: IBook) => void;
-  onDelete?: (book: IBook) => void;
+  onEdit: (updatedBook: IBook) => void;
+  onDelete: (book: IBook) => void;
   onRowClick?: (book: IBook) => void;
 }
 
-const OrdersTable: React.FC<Props> = ({
-  books,
-  onEdit,
-  onDelete,
-  onRowClick,
-}) => {
+const OrdersTable: React.FC<Props> = ({ books, onEdit, onDelete, onRowClick }) => {
+  const [openEdit, setOpenEdit] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<IBook | null>(null);
+
   const columns = [
     {
       key: "cover",
@@ -25,12 +24,7 @@ const OrdersTable: React.FC<Props> = ({
           <img
             src={b.cover_image_url}
             alt={b.title}
-            style={{
-              width: 60,
-              height: 80,
-              objectFit: "cover",
-              borderRadius: 4,
-            }}
+            style={{ width: 60, height: 80, objectFit: "cover", borderRadius: 4 }}
           />
         ) : (
           <Typography variant="body2" color="text.secondary">
@@ -64,7 +58,7 @@ const OrdersTable: React.FC<Props> = ({
     },
     {
       key: "reading_status",
-      label: "Reading Status",
+      label: "Status",
       render: (b: IBook) => {
         const ub = b.user_books?.[0];
         if (!ub || !ub.status) {
@@ -74,7 +68,6 @@ const OrdersTable: React.FC<Props> = ({
             </Typography>
           );
         }
-
         return (
           <Chip
             label={ub.status}
@@ -103,8 +96,9 @@ const OrdersTable: React.FC<Props> = ({
             variant="outlined"
             size="small"
             onClick={(e) => {
-              e.stopPropagation(); // <- prevent row click
-              onEdit?.(b);
+              e.stopPropagation();
+              setSelectedBook(b);
+              setOpenEdit(true);
             }}
           >
             Edit
@@ -114,8 +108,8 @@ const OrdersTable: React.FC<Props> = ({
             color="error"
             size="small"
             onClick={(e) => {
-              e.stopPropagation(); // <- prevent row click
-              onDelete?.(b);
+              e.stopPropagation();
+              onDelete(b);
             }}
           >
             Delete
@@ -125,7 +119,17 @@ const OrdersTable: React.FC<Props> = ({
     },
   ];
 
-  return <BookList books={books} columns={columns} onRowClick={onRowClick} />;
+  return (
+    <>
+      <BookList books={books} columns={columns} onRowClick={onRowClick} />
+      <EditOrderModal
+        open={openEdit}
+        book={selectedBook}
+        onClose={() => setOpenEdit(false)}
+        onSave={onEdit}
+      />
+    </>
+  );
 };
 
 export default OrdersTable;

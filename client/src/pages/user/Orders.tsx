@@ -14,16 +14,24 @@ const Orders = () => {
   const { books, loading, error } = useAppSelector((state) => state.books);
   const user = useAppSelector((state) => state.auth.user);
 
+  const [current_book, setCurrentBook] = useState<IBook[]>([]);
+
   useEffect(() => {
     dispatch(fetchUserBooks());
   }, [dispatch]);
 
-  const handleEdit = (book: IBook) => {
-    console.log("Edit book:", book);
+  const handleEdit = (updatedBook: IBook) => {
+    console.log("SEND TO BACKEND:", updatedBook);
+    setCurrentBook((prev) =>
+      prev.map((b) => (b.book_id === updatedBook.book_id ? updatedBook : b))
+    );
   };
 
-  const handleDelete = (book: IBook) => {
-    console.log("Delete book:", book);
+  const handleDelete = (updatedBook: IBook) => {
+    console.log("Delete book:", updatedBook);
+    setCurrentBook((prev) =>
+      prev.map((b) => (b.book_id === updatedBook.book_id ? updatedBook : b))
+    );
   };
 
   const handleRowClick = (book: IBook) => {
