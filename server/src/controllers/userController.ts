@@ -108,3 +108,29 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const searchUsers = async (req: Request, res: Response) => {
+  try {
+    const name = req.query.name as string;
+
+    if (!name || name.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        error: "Name query parameter is required",
+      });
+    }
+
+    const users = await User.findUsersByName(name);
+
+    res.json({
+      success: true,
+      users,
+    });
+  } catch (error: any) {
+    console.error("[User Search] Error:", error.message);
+    res.status(500).json({
+      success: false,
+      error: "Failed to search users",
+    });
+  }
+};
