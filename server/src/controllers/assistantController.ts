@@ -51,7 +51,7 @@ export const askAssistant = async (
 
     // If rule-based fails, use AI
     if (!sql) {
-      console.log("[AI Assistant] Using Hugging Face API...");
+      console.log("[AI Assistant] Using OpenAI API...");
       sql = await queryAI(trimmedQuestion);
       method = "ai-powered";
     }
