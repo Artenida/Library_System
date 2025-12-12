@@ -3,6 +3,8 @@ import { parseQuestionToSQL } from "../utils/queryParser";
 import { executeQuery } from "../utils/databaseHelper";
 import { formatAssistantResponse } from "../utils/responseFormatter";
 import { queryAI } from "../utils/aiService";
+import { User } from "../models/user";
+import { generateInsights } from "../utils/aiInsightsService";
 
 interface AssistantRequest extends Request {
   body: {
@@ -95,6 +97,71 @@ export const askAssistant = async (
       error: "Failed to process your question",
       details:
         process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
+
+export const askInsights = async (req: any, res: any) => {
+  try {
+    const userName = req.query.user_name as string;
+
+    if (!userName || userName.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        error: "user_name query parameter is required",
+      });
+    }
+
+    const users = await User.findUsersByName(userName);
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    const userId = users[0].id;
+
+    const sql = `
+      SELECT 
+        b.title,
+        b.pages,
+        b.state,
+        STRING_AGG(DISTINCT g.name, ', ') as genres
+      FROM user_books ub
+      LEFT JOIN books b ON ub.book_id = b.id
+      LEFT JOIN book_genres bg ON b.id = bg.book_id
+      LEFT JOIN genres g ON bg.genre_id = g.id
+      WHERE ub.user_id = '${userId}'
+      GROUP BY b.id, b.title, b.pages, b.state
+    `;
+
+    const userBooks = await executeQuery(sql);
+
+    if (!userBooks || userBooks.length === 0) {
+      return res.json({
+        success: true,
+        insights: "No reading data available for this user.",
+      });
+    }
+
+    // Prepare a prompt for OpenAI
+    const bookListSummary = userBooks
+      .map((b: any) => `${b.title} (${b.pages} pages, genres: ${b.genres})`)
+      .join("\n");
+
+    const summary = await generateInsights(bookListSummary, users[0].username);
+
+    return res.json({
+      success: true,
+      insights: summary || "No insights could be generated.",
+      data: userBooks,
+    });
+  } catch (error: any) {
+    console.error("[Library Insights] Error:", error.message);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to generate insights",
     });
   }
 };
