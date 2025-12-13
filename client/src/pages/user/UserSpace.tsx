@@ -7,7 +7,6 @@ import {
   Stack,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import AppHeader from "../../components/AppHeader";
 import { useState } from "react";
 import { deleteUserThunk, updateUserThunk } from "../../store/thunks/userThunks";
 import { logout } from "../../store/slices/authSlice";
@@ -60,8 +59,6 @@ const Profile = () => {
 
   return (
     <Box>
-      <AppHeader />
-
       <Box sx={{ p: 3, maxWidth: 500, mx: "auto" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
           <Avatar

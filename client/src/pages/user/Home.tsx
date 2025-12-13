@@ -15,13 +15,11 @@ import {
   searchBooks,
 } from "../../store/thunks/bookThunks";
 import LibraryTable from "../../components/LibraryTable";
-import AppHeader from "../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
 import type { IBook } from "../../types/bookTypes";
 import { clearSearch } from "../../store/slices/bookSlice";
 
 const Home = () => {
-  const [activeLink, setActiveLink] = useState("Library");
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { books, loading } = useAppSelector((state) => state.books);
@@ -69,8 +67,6 @@ const Home = () => {
 
   return (
     <Box sx={{ bgcolor: "#f7f7f7", minHeight: "100vh" }}>
-      <AppHeader activeLink={activeLink} setActiveLink={setActiveLink} />
-
       <Container
         sx={{
           mt: 2,
