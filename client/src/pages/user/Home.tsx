@@ -14,10 +14,10 @@ import {
   fetchBooks,
   searchBooks,
 } from "../../store/thunks/bookThunks";
-import LibraryTable from "../../components/LibraryTable";
 import { useNavigate } from "react-router-dom";
 import type { IBook } from "../../types/bookTypes";
 import { clearSearch } from "../../store/slices/bookSlice";
+import LibraryTable from "../../components/user/UserLibraryTable";
 
 const Home = () => {
   const dispatch = useAppDispatch();

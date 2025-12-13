@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Button, Box, Typography, Chip } from "@mui/material";
-import BookList from "./BookList";
-import type { IBook } from "../types/bookTypes";
-import EditOrderModal from "./EditOrderModal";
+import type { IBook } from "../../types/bookTypes";
+import BookList from "../books/BookList";
+import EditOrderModal from "../modals/EditOrderModal";
 
 interface Props {
   books: IBook[];

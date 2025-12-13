@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import AppHeader from "../components/AppHeader";
+import AppHeader from "../components/layout/AppHeader";
 
 const UserLayout = () => {
   return (

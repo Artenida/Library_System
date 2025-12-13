@@ -1,8 +1,8 @@
 import { Box, Chip, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import type { IBook } from "../types/bookTypes";
-import BookList from "./BookList";
+import type { IBook } from "../../types/bookTypes";
+import BookList from "../books/BookList";
 
 interface Props {
   books: IBook[];

@@ -16,7 +16,7 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PagesIcon from "@mui/icons-material/MenuBook";
 import PriceIcon from "@mui/icons-material/AttachMoney";
-import AppHeader from "../components/AppHeader";
+import AppHeader from "../components/layout/AppHeader";
 
 const BookDetails = () => {
   const { id } = useParams<{ id: string }>();

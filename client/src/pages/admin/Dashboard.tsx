@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import AdminBookTable from "../../components/AdminBookTable";
+import AdminBookTable from "../../components/admin/AdminBookTable";
 
 const Dashboard = () => {
   const [search, setSearch] = useState("");

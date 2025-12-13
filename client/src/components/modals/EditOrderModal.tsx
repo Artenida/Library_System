@@ -8,7 +8,7 @@ import {
   MenuItem,
   TextField,
 } from "@mui/material";
-import type { IBook } from "../types/bookTypes";
+import type { IBook } from "../../types/bookTypes";
 
 interface Props {
   open: boolean;

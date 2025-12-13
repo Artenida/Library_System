@@ -8,7 +8,7 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import type { IBook } from "../types/bookTypes";
+import type { IBook } from "../../types/bookTypes";
 
 interface Column {
   key: string;

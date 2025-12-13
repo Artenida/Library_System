@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Chip, Box, Typography } from "@mui/material";
-import BookList from "./BookList";
-import type { IBook } from "../types/bookTypes";
+import type { IBook } from "../../types/bookTypes";
+import BookList from "../books/BookList";
 
 interface Props {
   books: IBook[];

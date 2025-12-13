@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Box, Container, Typography, CircularProgress } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchUserBooks, updateBook } from "../../store/thunks/bookThunks";
-import OrdersTable from "../../components/OrdersTable";
+import OrdersTable from "../../components/user/OrdersTable";
 import { useNavigate } from "react-router-dom";
 import type { IBook } from "../../types/bookTypes";
 

@@ -1,7 +1,7 @@
 import { Box, Toolbar } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import AdminSidebar from "../components/Sidebar";
-import AdminNavbar from "../components/AdminNavbar";
+import AdminSidebar from "../components/layout/Sidebar";
+import AdminNavbar from "../components/layout/AdminNavbar";
 
 const AdminLayout = () => {
   return (

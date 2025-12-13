@@ -1,27 +1,17 @@
-import React from "react";
 import {
   AppBar,
   Toolbar,
   Typography,
   Box,
-  Button,
   Avatar,
   IconButton,
 } from "@mui/material";
-import LogoutIcon from "@mui/icons-material/Logout";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { logout } from "../store/slices/authSlice";
+import { logout } from "../../store/slices/authSlice";
+import LogoutIcon from "@mui/icons-material/Logout";
 
-interface AppHeaderProps {
-  activeLink?: string;
-  setActiveLink?: (link: string) => void;
-}
-
-const AppHeader: React.FC<AppHeaderProps> = ({
-  activeLink,
-  setActiveLink,
-}) => {
+const AdminNavbar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
@@ -30,43 +20,12 @@ const AppHeader: React.FC<AppHeaderProps> = ({
     dispatch(logout());
     navigate("/login");
   };
-
   return (
-    <AppBar position="static" sx={{ bgcolor: "#fff" }}>
+    <AppBar position="static" color="default" elevation={1}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: "bold",
-            color: "#1976d2",
-            fontFamily: "'Roboto Slab', serif",
-            cursor: "pointer",
-          }}
-          onClick={() => navigate("/")}
-        >
-          Books
+        <Typography variant="h6" fontWeight={600}>
+          Admin Dashboard
         </Typography>
-
-        <Box sx={{ display: "flex", gap: 3 }}>
-          {["Library", "Orders"].map((text) => (
-            <Button
-              key={text}
-              onClick={() =>
-                text === "Library" ? navigate("/") : navigate("/orders")
-              }
-              sx={{
-                color: activeLink === text ? "#1976d2" : "#000",
-                textTransform: "none",
-                fontFamily: "'Roboto', sans-serif",
-                fontWeight: 500,
-                borderRadius: "8px",
-                bgcolor: "inherit",
-              }}
-            >
-              {text}
-            </Button>
-          ))}
-        </Box>
 
         <Box sx={{ p: 1 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -81,7 +40,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                 transition: "transform 0.2s",
                 "&:hover": { transform: "scale(1.1)" },
               }}
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate("/dashboard/profile")}
             />
             <Box>
               <Typography
@@ -92,7 +51,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                   color: "#000",
                   cursor: "pointer",
                 }}
-                onClick={() => navigate("/profile")}
+                onClick={() => navigate("/dashboard/profile")}
               >
                 {user?.username}
               </Typography>
@@ -107,4 +66,4 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   );
 };
 
-export default AppHeader;
+export default AdminNavbar;
