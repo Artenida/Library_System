@@ -1,8 +1,19 @@
-import { Box, Container, CircularProgress, TextField, InputAdornment, IconButton } from "@mui/material";
+import {
+  Box,
+  Container,
+  CircularProgress,
+  TextField,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { borrowBook, fetchBooks, searchBooks } from "../../store/thunks/bookThunks";
+import {
+  borrowBook,
+  fetchBooks,
+  searchBooks,
+} from "../../store/thunks/bookThunks";
 import LibraryTable from "../../components/LibraryTable";
 import AppHeader from "../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
@@ -18,12 +29,14 @@ const Home = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  const displayedBooks =
-    searchResults.length > 0 || isSearching ? searchResults : books || [];
-
   useEffect(() => {
-    dispatch(fetchBooks({ page: 1, limit: 10 }));
-  }, [dispatch]);
+    if (!isSearching && !searchTerm) {
+      dispatch(fetchBooks({ page: 1, limit: 10 }));
+    }
+  }, [dispatch, isSearching ,searchTerm]);
+
+  const displayedBooks =
+    isSearching ? searchResults : books || [];
 
   const handleRowClick = (book: IBook) => {
     navigate(`/books/${book.book_id}`);

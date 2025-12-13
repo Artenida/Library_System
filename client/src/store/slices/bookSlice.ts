@@ -16,7 +16,7 @@ interface BookState {
   error: string | null;
   updated_book: IBook | null;
   updateError: string | null;
-  searchResults: IBook[];
+  searchResults: any;
   isSearching: boolean;
   searchError: string | null;
 }
@@ -39,6 +39,8 @@ const bookSlice = createSlice({
   reducers: {
     clearSearch(state) {
       state.searchResults = [];
+      state.isSearching = false; // <-- reset the searching flag
+      state.searchError = null; // optional
     },
   },
   extraReducers: (builder) => {
@@ -113,7 +115,6 @@ const bookSlice = createSlice({
         state.searchError = null;
       })
       .addCase(searchBooks.fulfilled, (state, action) => {
-        state.isSearching = false;
         state.searchResults = action.payload;
       })
       .addCase(searchBooks.rejected, (state, action) => {
