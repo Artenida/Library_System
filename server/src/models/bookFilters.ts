@@ -8,7 +8,16 @@ export class BookFilters {
     try {
       const query = `
         ${BASE_QUERY}
-        WHERE LOWER(g.name) = LOWER($1)
+        FROM books b
+        LEFT JOIN book_authors ba ON ba.book_id = b.id
+        LEFT JOIN authors a ON ba.author_id = a.id
+        LEFT JOIN book_genres bg ON bg.book_id = b.id
+        LEFT JOIN genres g ON bg.genre_id = g.id
+        LEFT JOIN user_books ub 
+        ON ub.book_id = b.id 
+        AND ub.status IN ('reading', 'completed')
+        LEFT JOIN users u ON ub.user_id = u.id 
+        WHERE b.is_active = TRUE AND LOWER(g.name) = LOWER($1)
         GROUP BY 
           b.id, b.title, b.description, b.published_date, b.pages, b.price, b.cover_image_url, b.state
         ORDER BY b.title ASC
