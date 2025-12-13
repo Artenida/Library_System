@@ -1,7 +1,7 @@
 import pool from "../config/databaseConnection";
 import { IBook, IUserWithBooks, CreateBookBody } from "../types/bookTypes";
 import { formatBooks } from "../utils/bookUtils";
-import {BASE_QUERY} from "../utils/bookUtils"
+import { BASE_QUERY } from "../utils/bookUtils";
 
 export class Book {
   static async getBooks(
@@ -11,11 +11,22 @@ export class Book {
     currentUserRole?: string
   ): Promise<IBook[]> {
     try {
-      const offset = (page - 1) * limit; // Calculate offset for pagination
+      const offset = (page - 1) * limit;
 
       const query = `
         ${BASE_QUERY}
+        FROM books b
+        LEFT JOIN book_authors ba ON ba.book_id = b.id
+        LEFT JOIN authors a ON ba.author_id = a.id
+        LEFT JOIN book_genres bg ON bg.book_id = b.id
+        LEFT JOIN genres g ON bg.genre_id = g.id
+        LEFT JOIN user_books ub 
+        ON ub.book_id = b.id 
+        AND ub.status IN ('reading', 'completed')
+        LEFT JOIN users u ON ub.user_id = u.id 
         WHERE b.is_active = TRUE
+        GROUP BY 
+    b.id, b.title, b.description, b.published_date, b.pages, b.price, b.cover_image_url, b.state
         ORDER BY b.title ASC
         LIMIT $1 OFFSET $2
       `;
@@ -42,7 +53,18 @@ export class Book {
     try {
       const query = `
         ${BASE_QUERY}
-        WHERE b.id = $1 AND b.is_active = TRUE`;
+        FROM books b
+        LEFT JOIN book_authors ba ON ba.book_id = b.id
+        LEFT JOIN authors a ON ba.author_id = a.id
+        LEFT JOIN book_genres bg ON bg.book_id = b.id
+        LEFT JOIN genres g ON bg.genre_id = g.id
+        LEFT JOIN user_books ub 
+        ON ub.book_id = b.id 
+        AND ub.status IN ('reading', 'completed')
+        LEFT JOIN users u ON ub.user_id = u.id 
+        WHERE b.id = $1 AND b.is_active = TRUE
+        GROUP BY 
+    b.id, b.title, b.description, b.published_date, b.pages, b.price, b.cover_image_url, b.state`;
 
       const result = await pool.query(query, [book_id]);
 
@@ -167,15 +189,14 @@ export class Book {
       }
 
       // Update user_books status if present
-     const userBook = data.user_books?.[0];
-    if (userBook?.user_book_id && userBook?.status) {
-      await this.updateUserBookStatusInternal(
-        client,
-        userBook.user_book_id,
-        userBook.status
-      );
-    }
-
+      const userBook = data.user_books?.[0];
+      if (userBook?.user_book_id && userBook?.status) {
+        await this.updateUserBookStatusInternal(
+          client,
+          userBook.user_book_id,
+          userBook.status
+        );
+      }
 
       await client.query("COMMIT");
     } catch (error: any) {
@@ -265,10 +286,18 @@ export class Book {
     try {
       const query = `
       ${BASE_QUERY}
+      FROM books b
+      LEFT JOIN book_authors ba ON ba.book_id = b.id
+      LEFT JOIN authors a ON ba.author_id = a.id
+      LEFT JOIN book_genres bg ON bg.book_id = b.id
+      LEFT JOIN genres g ON bg.genre_id = g.id
+      LEFT JOIN user_books ub ON ub.book_id = b.id
+      LEFT JOIN users u ON ub.user_id = u.id 
       WHERE ub.user_id = $1
         AND ub.status != 'deleted'
         AND b.is_active = TRUE
-      ORDER BY ub.created_at DESC
+      GROUP BY 
+        b.id, b.title, b.description, b.published_date, b.pages, b.price, b.cover_image_url, b.state
     `;
 
       const result = await pool.query(query, [user_id]);
@@ -286,116 +315,80 @@ export class Book {
 
   static async getUsersWithBooks(): Promise<IUserWithBooks[]> {
     const query = `
+    SELECT
+      u.id AS user_id,
+      u.username,
+      u.email,
+      u.role,
+
+      COALESCE(
+        JSON_AGG(
+          DISTINCT jsonb_build_object(
+            'book_id', b.id,
+            'title', b.title,
+            'description', b.description,
+            'published_date', b.published_date,
+            'pages', b.pages,
+            'state', b.state,
+            'user_book', jsonb_build_object(
+              'user_book_id', ub.id,
+              'status', ub.status,
+              'created_at', ub.created_at
+            ),
+            'authors', COALESCE(authors_agg.authors, '[]'::json),
+            'genres', COALESCE(genres_agg.genres, '[]'::json)
+          )
+        ) FILTER (WHERE b.id IS NOT NULL),
+        '[]'
+      ) AS books
+
+    FROM users u
+    LEFT JOIN user_books ub ON u.id = ub.user_id
+    LEFT JOIN books b ON ub.book_id = b.id AND b.is_active = TRUE
+
+    LEFT JOIN (
       SELECT
-        u.id AS user_id,
-        u.username,
-        u.email,
-        u.role,
+        ba.book_id,
+        JSON_AGG(
+          DISTINCT jsonb_build_object(
+            'author_id', a.id,
+            'name', a.name,
+            'birth_year', a.birth_year
+          )
+        ) AS authors
+      FROM book_authors ba
+      JOIN authors a ON ba.author_id = a.id
+      GROUP BY ba.book_id
+    ) authors_agg ON authors_agg.book_id = b.id
 
-        ub.id AS user_book_id,
-        ub.status AS user_book_status,
-        ub.created_at AS user_book_created_at,
+    LEFT JOIN (
+      SELECT
+        bg.book_id,
+        JSON_AGG(
+          DISTINCT jsonb_build_object(
+            'genre_id', g.id,
+            'name', g.name
+          )
+        ) AS genres
+      FROM book_genres bg
+      JOIN genres g ON bg.genre_id = g.id
+      GROUP BY bg.book_id
+    ) genres_agg ON genres_agg.book_id = b.id
 
-        b.id AS book_id,
-        b.title,
-        b.description,
-        b.published_date,
-        b.pages,
-        b.state AS book_state,
+    GROUP BY u.id
+    ORDER BY u.username ASC;
+  `;
 
-        a.id AS author_id,
-        a.name AS author_name,
-        a.birth_year AS author_birth_year,
+    const { rows } = await pool.query(query);
 
-        g.id AS genre_id,
-        g.name AS genre_name
-
-      FROM users u
-      LEFT JOIN user_books ub ON u.id = ub.user_id
-      LEFT JOIN books b ON ub.book_id = b.id AND b.is_active = TRUE
-
-      LEFT JOIN book_authors ba ON b.id = ba.book_id
-      LEFT JOIN authors a ON ba.author_id = a.id
-
-      LEFT JOIN book_genres bg ON b.id = bg.book_id
-      LEFT JOIN genres g ON bg.genre_id = g.id
-
-      ORDER BY u.username ASC, ub.created_at DESC;
-    `;
-
-    const result = await pool.query(query);
-
-    const usersMap: Record<string, IUserWithBooks> = {};
-
-    for (const row of result.rows) {
-      // Create parent user entry if missing
-      if (!usersMap[row.user_id]) {
-        usersMap[row.user_id] = {
-          user_id: row.user_id,
-          username: row.username,
-          email: row.email,
-          role: row.role,
-          books: [],
-        };
-      }
-
-      // If user has no user_books, continue
-      if (!row.user_book_id) continue;
-
-      // Check if user_book already exists
-      let userBook = usersMap[row.user_id].books.find(
-        (b) => b.user_book_id === row.user_book_id
-      );
-
-      // Create user_book entry if missing
-      if (!userBook) {
-        userBook = {
-          user_book_id: row.user_book_id,
-          status: row.user_book_status,
-          created_at: row.user_book_created_at,
-          book: {
-            book_id: row.book_id,
-            title: row.title,
-            description: row.description,
-            published_date: row.published_date,
-            pages: row.pages,
-            state: row.book_state,
-            authors: [],
-            genres: [],
-          },
-        };
-        usersMap[row.user_id].books.push(userBook);
-      }
-
-      // Add author if exists
-      if (row.author_id) {
-        const exists = userBook.book.authors.some(
-          (a) => a.author_id === row.author_id
-        );
-        if (!exists) {
-          userBook.book.authors.push({
-            author_id: row.author_id,
-            name: row.author_name,
-            birth_year: row.author_birth_year,
-          });
-        }
-      }
-
-      // Add genre if exists
-      if (row.genre_id) {
-        const exists = userBook.book.genres.some(
-          (g) => g.genre_id === row.genre_id
-        );
-        if (!exists) {
-          userBook.book.genres.push({
-            genre_id: row.genre_id,
-            name: row.genre_name,
-          });
-        }
-      }
-    }
-
-    return Object.values(usersMap);
+    // ✅ Result is already correctly formatted
+    return rows.map((row) => ({
+      user_id: row.user_id,
+      username: row.username,
+      email: row.email,
+      role: row.role,
+      books: row.books ?? [],
+    }));
   }
 
   // HELPER METHODS

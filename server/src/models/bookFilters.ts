@@ -9,6 +9,8 @@ export class BookFilters {
       const query = `
         ${BASE_QUERY}
         WHERE LOWER(g.name) = LOWER($1)
+        GROUP BY 
+          b.id, b.title, b.description, b.published_date, b.pages, b.price, b.cover_image_url, b.state
         ORDER BY b.title ASC
       `;
 
