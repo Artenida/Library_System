@@ -71,10 +71,7 @@ export class User {
     }
   }
 
-  static async updateUser(
-    id: String,
-    data: Partial<IUser>
-  ): Promise<IUser> {
+  static async updateUser(id: String, data: Partial<IUser>): Promise<IUser> {
     try {
       if (data.password_hash) {
         data.password_hash = await bcrypt.hash(data.password_hash, 10);
@@ -116,5 +113,20 @@ export class User {
       console.error("Error deleting user:", error.message);
       throw new Error(error.message);
     }
+  }
+
+  static async findUsersByName(
+    name: string
+  ): Promise<{ id: string; username: string }[]> {
+    const sql = `
+    SELECT id, username
+    FROM users
+    WHERE LOWER(username) LIKE LOWER($1)
+    LIMIT 20
+  `;
+    const values = [`%${name}%`];
+
+    const result = await pool.query(sql, values);
+    return result.rows;
   }
 }
