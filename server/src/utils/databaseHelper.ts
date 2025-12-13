@@ -7,6 +7,7 @@ export async function executeQuery(sql: string): Promise<any[]> {
       throw new Error("Only SELECT queries are allowed");
     }
 
+    //Query in database
     const result = await pool.query(sql);
     return result.rows;
   } catch (error: any) {

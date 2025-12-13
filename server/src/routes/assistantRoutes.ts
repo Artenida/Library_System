@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { askAssistant, askInsights } from "../controllers/assistantController";
+import { askAssistant, askInsights } from "../ai/controllers/assistantController";
 import { authenticate, isAdmin } from "../middleware/authMiddleware";
 
 const router = Router();
