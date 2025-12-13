@@ -10,7 +10,7 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { loading, error, isLoggedIn } = useSelector(
+  const { user, loading, error, isLoggedIn } = useSelector(
     (state: RootState) => state.auth
   );
 
@@ -21,10 +21,14 @@ const Login = () => {
   );
 
   useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/");
+    if (isLoggedIn && user) {
+      if (user.role === "admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
     }
-  }, [isLoggedIn, navigate]);
+  }, [isLoggedIn, user, navigate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

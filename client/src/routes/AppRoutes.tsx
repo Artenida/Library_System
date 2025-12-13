@@ -6,6 +6,9 @@ import Register from "../pages/auth/Register";
 import BookDetails from "../pages/BookDetails";
 import Orders from "../pages/user/Orders";
 import Profile from "../pages/user/UserSpace";
+import AdminLayout from "../Layouts/AdminLayout";
+import Dashboard from "../pages/admin/Dashboard";
+import UserLayout from "../Layouts/UserLayout";
 
 const AppRoutes = () => {
   return (
@@ -14,14 +17,6 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/books/:id"
           element={
             <ProtectedRoute>
@@ -29,22 +24,31 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+
         <Route
-          path="/orders"
+          path="/"
           element={
-            <ProtectedRoute>
-              <Orders />
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<Home />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+
         <Route
-          path="/profile"
+          path="/dashboard"
           element={
-            <ProtectedRoute>
-              <Profile />
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<Dashboard />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
