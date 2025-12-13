@@ -5,7 +5,7 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import BookDetails from "../pages/BookDetails";
 import Orders from "../pages/user/Orders";
-import Profile from "../pages/user/UserSpace";
+import Profile from "../pages/UserSpace";
 import AdminLayout from "../Layouts/AdminLayout";
 import Dashboard from "../pages/admin/Dashboard";
 import UserLayout from "../Layouts/UserLayout";

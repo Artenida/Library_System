@@ -6,10 +6,10 @@ import {
   Button,
   Stack,
 } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { useState } from "react";
-import { deleteUserThunk, updateUserThunk } from "../../store/thunks/userThunks";
-import { logout } from "../../store/slices/authSlice";
+import { deleteUserThunk, updateUserThunk } from "../store/thunks/userThunks";
+import { logout } from "../store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
