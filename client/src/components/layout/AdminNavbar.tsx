@@ -15,13 +15,23 @@ const AdminNavbar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
+  const SIDEBAR_WIDTH = 240;
 
   const handleSignOut = () => {
     dispatch(logout());
     navigate("/login");
   };
+
   return (
-    <AppBar color="default">
+    <AppBar
+      position="fixed"
+      color="default"
+      sx={{
+        width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+        ml: `${SIDEBAR_WIDTH}px`,
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
+    >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h6" fontWeight={600}>
           Admin Dashboard
