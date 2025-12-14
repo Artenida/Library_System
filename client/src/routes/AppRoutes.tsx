@@ -10,6 +10,7 @@ import AdminLayout from "../Layouts/AdminLayout";
 import Dashboard from "../pages/admin/Dashboard";
 import UserLayout from "../Layouts/UserLayout";
 import Users from "../pages/admin/Users";
+import UserBooks from "../pages/admin/UserBooks";
 
 const AppRoutes = () => {
   return (
@@ -42,7 +43,7 @@ const AppRoutes = () => {
           <Route index element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
           <Route path="users" element={<Users />} />
-          <Route path="users/:id" element={<Users />} />
+          <Route path="users/:id" element={<UserBooks />} />
           <Route path="books/:id" element={<BookDetails />} />
         </Route>
       </Routes>

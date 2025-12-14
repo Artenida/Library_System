@@ -1,21 +1,31 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import LibraryTable from "../../components/user/UserLibraryTable";
 import { Typography, CircularProgress } from "@mui/material";
 import { fetchUserBooks } from "../../store/thunks/bookThunks";
+import OrdersTable from "../../components/user/OrdersTable";
+import type { IBook } from "../../types/bookTypes";
 
 const UserBooks = () => {
-  const { userId } = useParams();
+  const { id } = useParams();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { books, loading } = useAppSelector((state) => state.books);
 
   useEffect(() => {
-    if (userId) {
-      dispatch(fetchUserBooks(userId));
+    if (id) {
+      dispatch(fetchUserBooks(id));
     }
-  }, [dispatch, userId]);
+  }, [dispatch, id]);
 
+  const handleEdit = async (updatedBook: IBook) => {
+    console.log("Sending to backend:", updatedBook);
+  };
+
+  const handleDelete = async (book: IBook) => {
+    console.log("Soft deleting book:", book.book_id);
+  };
+  
   if (loading) return <CircularProgress />;
 
   return (
@@ -23,7 +33,11 @@ const UserBooks = () => {
       <Typography variant="h5" mb={2}>
         User Books
       </Typography>
-      <LibraryTable books={books} />
+      <OrdersTable
+        books={books}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
     </>
   );
 };
