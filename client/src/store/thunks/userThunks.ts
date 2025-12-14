@@ -1,6 +1,26 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { deleteUserService, updateUserService } from "../../services/userService";
+import { deleteUserService, getUsersService, updateUserService } from "../../services/userService";
 import type { RootState } from "../store";
+
+export const getUsersThunk = createAsyncThunk(
+  "user/getAll",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+
+      if (!token) return rejectWithValue("Missing token");
+
+      const res = await getUsersService(token);
+
+      return res.data.users; // array of users
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch users"
+      );
+    }
+  }
+);
 
 export const updateUserThunk = createAsyncThunk(
   "user/update",
