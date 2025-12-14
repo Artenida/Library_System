@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { Typography, CircularProgress } from "@mui/material";
@@ -9,7 +9,6 @@ import type { IBook } from "../../types/bookTypes";
 const UserBooks = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { books, loading } = useAppSelector((state) => state.books);
 
   useEffect(() => {
@@ -25,7 +24,7 @@ const UserBooks = () => {
   const handleDelete = async (book: IBook) => {
     console.log("Soft deleting book:", book.book_id);
   };
-  
+
   if (loading) return <CircularProgress />;
 
   return (
@@ -33,11 +32,17 @@ const UserBooks = () => {
       <Typography variant="h5" mb={2}>
         User Books
       </Typography>
-      <OrdersTable
-        books={books}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      {books.length === 0 ? (
+        <Typography variant="body1" color="text.secondary">
+          This user does not have any books.
+        </Typography>
+      ) : (
+        <OrdersTable
+          books={books}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
     </>
   );
 };
