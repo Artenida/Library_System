@@ -45,14 +45,19 @@ export const fetchBookDetails = createAsyncThunk<
   }
 );
 
-export const fetchUserBooks = createAsyncThunk(
-  "books/fetchUserBooks",
-  async (_, { getState }) => {
-    const token = (getState() as RootState).auth.token;
-    if (!token) throw new Error("User not authenticated");
-    return await getUserBooks(token);
+export const fetchUserBooks = createAsyncThunk<
+  IBook[], // return type
+  string, // argument type (user_id)
+  { state: RootState }
+>("books/fetchUserBooks", async (user_id, { getState }) => {
+  const token = getState().auth.token;
+
+  if (!token) {
+    throw new Error("User not authenticated");
   }
-);
+
+  return await getUserBooks(user_id, token);
+});
 
 export const updateBook = createAsyncThunk<IBook, IBook, { state: RootState }>(
   "books/updateBook",

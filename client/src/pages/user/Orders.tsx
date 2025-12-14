@@ -5,14 +5,20 @@ import { fetchUserBooks, updateBook } from "../../store/thunks/bookThunks";
 import OrdersTable from "../../components/user/OrdersTable";
 import { useNavigate } from "react-router-dom";
 import type { IBook } from "../../types/bookTypes";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store/store";
 
 const Orders = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { books, loading, error } = useAppSelector((state) => state.books);
+  const { user } = useSelector((state: RootState) => state.auth);
+  if (!user) {
+    return "User is not authenticated";
+  }
 
   useEffect(() => {
-    dispatch(fetchUserBooks());
+    dispatch(fetchUserBooks(user?.id));
   }, [dispatch]);
 
   const handleEdit = async (updatedBook: IBook) => {
@@ -21,7 +27,7 @@ const Orders = () => {
 
       await dispatch(updateBook(updatedBook)).unwrap();
 
-      dispatch(fetchUserBooks());
+      dispatch(fetchUserBooks(user?.id));
     } catch (error) {
       console.error("Failed to update book:", error);
     }
@@ -41,7 +47,7 @@ const Orders = () => {
 
       await dispatch(updateBook(deletedBook)).unwrap();
 
-      dispatch(fetchUserBooks());
+      dispatch(fetchUserBooks(user?.id));
     } catch (error) {
       console.error("Failed to soft delete book:", error);
     }

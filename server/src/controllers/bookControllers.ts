@@ -179,7 +179,7 @@ export const borrowBook = async (req: AuthRequest, res: Response) => {
 
 export const listUserBooks = async (req: AuthRequest, res: Response) => {
   try {
-    const user_id = req.user?.id;
+    const user_id = req.params?.user_id;
     if (!user_id) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
@@ -196,23 +196,5 @@ export const listUserBooks = async (req: AuthRequest, res: Response) => {
       success: false,
       message: error.message,
     });
-  }
-};
-
-export const listAllUsersWithBooks = async (
-  req: AuthRequest,
-  res: Response
-) => {
-  try {
-    const users = await Book.getUsersWithBooks();
-
-    return res.status(200).json({
-      success: true,
-      count: users.length,
-      data: users,
-    });
-  } catch (err: any) {
-    console.error("getAllUsersWithBooks:", err.message);
-    return res.status(500).json({ message: "Failed to retrieve users" });
   }
 };

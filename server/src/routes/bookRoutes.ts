@@ -5,7 +5,6 @@ import {
   createBook,
   getBooksList,
   getSingleBook,
-  listAllUsersWithBooks,
   listUserBooks,
   softDeleteBook,
   updateBook,
@@ -13,13 +12,12 @@ import {
 const router = Router();
 
 router.get("/", authenticate, getBooksList);
-router.get("/user/books", authenticate, listUserBooks);
+router.get("/user/:user_id/books", authenticate, listUserBooks);
 router.post("/:book_id/borrow", authenticate, borrowBook);
 router.put("/:id", authenticate, updateBook);
 router.get("/:id", authenticate, getSingleBook);
 
 router.post("/admin", authenticate, createBook);
 router.delete("/admin/:id", authenticate, isAdmin, softDeleteBook);
-router.get("/admin/users", authenticate, isAdmin, listAllUsersWithBooks);
 
 export default router;
