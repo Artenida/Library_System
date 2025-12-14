@@ -6,11 +6,10 @@ import BookList from "../books/BookList";
 
 interface Props {
   books: IBook[];
-  onEdit: (book: IBook) => void;
-  onDelete: (book: IBook) => void;
+  onRowClick: (book: IBook) => void;
 }
 
-const AdminBookTable: React.FC<Props> = ({ books, onEdit, onDelete }) => {
+const AdminBookTable: React.FC<Props> = ({ books, onRowClick }) => {
   const columns = [
     {
       key: "cover",
@@ -71,34 +70,61 @@ const AdminBookTable: React.FC<Props> = ({ books, onEdit, onDelete }) => {
     {
       key: "reading_status",
       label: "Reading Status",
-      render: (b: IBook) => (
-        <Box display="flex" gap={0.5} flexWrap="wrap">
-          {b.user_books?.map((ub) => (
-            <Chip key={ub.user_book_id} label={ub.status} size="small" />
-          ))}
-        </Box>
-      ),
+      render: (b: IBook) => {
+        if (!b.user_books || b.user_books.length === 0) {
+          return (
+            <Chip label="—" size="small" variant="outlined" color="default" />
+          );
+        }
+
+        return (
+          <Box display="flex" gap={0.5} flexWrap="wrap">
+            {b.user_books.map((ub) => (
+              <Chip key={ub.user_book_id} label={ub.status} size="small" />
+            ))}
+          </Box>
+        );
+      },
     },
+
     {
       key: "user_name",
       label: "Active User Name",
-      render: (b: IBook) => (
-        <Box display="flex" gap={0.5} flexWrap="wrap">
-          {b.user?.map((u) => (
-            <Chip key={u.user_id} label={u.name} size="small" />
-          ))}
-        </Box>
-      ),
+      render: (b: IBook) => {
+        if (!b.user || b.user.length === 0) {
+          return (
+            <Chip label="—" size="small" variant="outlined" color="default" />
+          );
+        }
+
+        return (
+          <Box display="flex" gap={0.5} flexWrap="wrap">
+            {b.user.map((u) => (
+              <Chip key={u.user_id} label={u.name} size="small" />
+            ))}
+          </Box>
+        );
+      },
     },
+
     {
       key: "actions",
       label: "Actions",
-      render: (b: IBook) => (
+      render: () => (
         <Box>
-          <IconButton onClick={() => onEdit(b)}>
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             <EditIcon />
           </IconButton>
-          <IconButton color="error" onClick={() => onDelete(b)}>
+          <IconButton
+            color="error"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             <DeleteIcon />
           </IconButton>
         </Box>
@@ -106,7 +132,7 @@ const AdminBookTable: React.FC<Props> = ({ books, onEdit, onDelete }) => {
     },
   ];
 
-  return <BookList books={books} columns={columns} />;
+  return <BookList books={books} columns={columns} onRowClick={onRowClick} />;
 };
 
 export default AdminBookTable;

@@ -16,12 +16,12 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PagesIcon from "@mui/icons-material/MenuBook";
 import PriceIcon from "@mui/icons-material/AttachMoney";
-import AppHeader from "../components/layout/AppHeader";
 
 const BookDetails = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const { book, loading, error } = useAppSelector((state) => state.books);
+  const userRole = useAppSelector((state) => state.auth.user?.role);
 
   useEffect(() => {
     if (id) dispatch(fetchBookDetails(id));
@@ -57,8 +57,6 @@ const BookDetails = () => {
 
   return (
     <Box sx={{ bgcolor: "#f7f7f7", minHeight: "100vh" }}>
-      <AppHeader />
-
       <Container sx={{ mt: 3, mb: 3 }}>
         <Box
           display="flex"
@@ -172,18 +170,20 @@ const BookDetails = () => {
               )}
             </Stack>
 
-            {/* Take Book Button */}
-            <Box mt={3}>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={!isFree}
-                sx={{ px: 4, py: 1.5, fontWeight: 600 }}
-                onClick={handleTakeBook}
-              >
-                Take Book
-              </Button>
-            </Box>
+            {/* Take Book Button – only for users */}
+            {userRole === "user" && (
+              <Box mt={3}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={!isFree}
+                  sx={{ px: 4, py: 1.5, fontWeight: 600 }}
+                  onClick={handleTakeBook}
+                >
+                  Take Book
+                </Button>
+              </Box>
+            )}
           </Box>
         </Box>
       </Container>

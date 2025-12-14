@@ -17,15 +17,6 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route
-          path="/books/:id"
-          element={
-            <ProtectedRoute>
-              <BookDetails />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
           path="/"
           element={
             <ProtectedRoute allowedRoles={["user"]}>
@@ -36,6 +27,7 @@ const AppRoutes = () => {
           <Route index element={<Home />} />
           <Route path="orders" element={<Orders />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="/books/:id" element={<BookDetails />} />
         </Route>
 
         <Route
@@ -48,6 +40,7 @@ const AppRoutes = () => {
         >
           <Route index element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="books/:id" element={<BookDetails />} />
         </Route>
       </Routes>
     </BrowserRouter>
