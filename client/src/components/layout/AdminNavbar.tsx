@@ -21,7 +21,7 @@ const AdminNavbar = () => {
     navigate("/login");
   };
   return (
-    <AppBar position="static" color="default" elevation={1}>
+    <AppBar color="default">
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h6" fontWeight={600}>
           Admin Dashboard
