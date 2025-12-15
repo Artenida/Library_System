@@ -83,4 +83,35 @@ export class Genre {
       throw new Error(error.message);
     }
   }
+
+  static async getBooksByGenreId(genre_id: string) {
+    if (!genre_id) {
+      throw new Error("Genre ID is required!");
+    }
+
+    try {
+      const query = `
+      SELECT
+        b.id AS book_id,
+        b.title,
+        b.description,
+        b.published_date,
+        b.pages,
+        b.price,
+        b.cover_image_url,
+        b.state
+      FROM books b
+      INNER JOIN book_genres bg ON bg.book_id = b.id
+      WHERE bg.genre_id = $1
+      ORDER BY b.title ASC
+    `;
+
+      const result = await pool.query(query, [genre_id]);
+
+      return result.rows;
+    } catch (error: any) {
+      console.error("Error retrieving books for genre:", error.message);
+      throw new Error("Error fetching books for genre: " + error.message);
+    }
+  }
 }
