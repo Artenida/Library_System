@@ -13,6 +13,7 @@ import Users from "../pages/admin/Users";
 import UserBooks from "../pages/admin/UserBooks";
 import Authors from "../pages/admin/Authors";
 import Genres from "../pages/admin/Genres";
+import AuthorBooks from "../pages/admin/AuthorBooks";
 
 const AppRoutes = () => {
   return (
@@ -49,6 +50,7 @@ const AppRoutes = () => {
           <Route path="genres" element={<Genres />} />
           <Route path="users/:id" element={<UserBooks />} />
           <Route path="books/:id" element={<BookDetails />} />
+          <Route path="authors/:author_id" element={<AuthorBooks />} />
         </Route>
       </Routes>
     </BrowserRouter>

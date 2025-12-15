@@ -110,7 +110,7 @@ export const getAuthorBooksThunk = createAsyncThunk(
 
       const res = await getAuthorBooksService(authorId, token);
 
-      return res.data.books; // array of books
+      return res.data; 
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch author books"
