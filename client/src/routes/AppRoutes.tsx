@@ -12,6 +12,7 @@ import UserLayout from "../Layouts/UserLayout";
 import Users from "../pages/admin/Users";
 import UserBooks from "../pages/admin/UserBooks";
 import Authors from "../pages/admin/Authors";
+import Genres from "../pages/admin/Genres";
 
 const AppRoutes = () => {
   return (
@@ -45,6 +46,7 @@ const AppRoutes = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="users" element={<Users />} />
           <Route path="authors" element={<Authors />} />
+          <Route path="genres" element={<Genres />} />
           <Route path="users/:id" element={<UserBooks />} />
           <Route path="books/:id" element={<BookDetails />} />
         </Route>
