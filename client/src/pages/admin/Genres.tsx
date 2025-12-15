@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { CircularProgress, Container, Box } from "@mui/material";
+import { CircularProgress, Container, Box, Button } from "@mui/material";
 import {
+  createGenreThunk,
   deleteGenreThunk,
   getGenresThunk,
   updateGenreThunk,
@@ -9,6 +10,7 @@ import {
 import GenresTable from "../../components/admin/GenresTable";
 import { useNavigate } from "react-router-dom";
 import EditGenreModal from "../../components/modals/EditGenreModal";
+import CreateGenreModal from "../../components/modals/CreateGenreModal";
 
 interface IGenre {
   genre_id: string;
@@ -21,6 +23,7 @@ const Genres = () => {
   const { genres, loading } = useAppSelector((state) => state.genre);
 
   const [editingGenre, setEditingGenre] = useState<IGenre | null>(null);
+  const [creatingGenre, setCreatingGenre] = useState(false);
 
   useEffect(() => {
     dispatch(getGenresThunk());
@@ -52,6 +55,12 @@ const Genres = () => {
     setEditingGenre(null);
   };
 
+  const handleSaveCreate = async (newAuthor: Omit<IGenre, "genre_id">) => {
+    await dispatch(createGenreThunk(newAuthor)).unwrap();
+    dispatch(getGenresThunk());
+    setCreatingGenre(false);
+  };
+
   if (loading)
     return (
       <Box display="flex" justifyContent="center" mt={5}>
@@ -61,6 +70,13 @@ const Genres = () => {
 
   return (
     <Container sx={{ mt: 3 }}>
+      <Button
+        variant="contained"
+        onClick={() => setCreatingGenre(true)}
+        sx={{ mb: 2 }}
+      >
+        Create Genre
+      </Button>
       <GenresTable
         genres={genres}
         onRowClick={handleRowClick}
@@ -72,6 +88,11 @@ const Genres = () => {
         genre={editingGenre}
         onClose={() => setEditingGenre(null)}
         onSave={handleSaveEdit}
+      />
+      <CreateGenreModal
+        open={creatingGenre}
+        onClose={() => setCreatingGenre(false)}
+        onSave={handleSaveCreate}
       />
     </Container>
   );
