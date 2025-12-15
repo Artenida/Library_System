@@ -6,12 +6,14 @@ import authReducer from "./slices/authSlice";
 import booksReducer from "./slices/bookSlice";
 import userReducer from "./slices/userSlice";
 import authorReducer from "./slices/authorSlice";
+import genreReducer from "./slices/genreSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
   books: booksReducer,
   author: authorReducer,
+  genre: genreReducer,
 });
 
 const persistConfig = {
