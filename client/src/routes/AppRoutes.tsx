@@ -11,6 +11,7 @@ import Dashboard from "../pages/admin/Dashboard";
 import UserLayout from "../Layouts/UserLayout";
 import Users from "../pages/admin/Users";
 import UserBooks from "../pages/admin/UserBooks";
+import Authors from "../pages/admin/Authors";
 
 const AppRoutes = () => {
   return (
@@ -43,6 +44,7 @@ const AppRoutes = () => {
           <Route index element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
           <Route path="users" element={<Users />} />
+          <Route path="authors" element={<Authors />} />
           <Route path="users/:id" element={<UserBooks />} />
           <Route path="books/:id" element={<BookDetails />} />
         </Route>
