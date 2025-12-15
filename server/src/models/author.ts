@@ -78,4 +78,35 @@ export class Author {
       throw new Error(error.message);
     }
   }
+
+  static async getBooksByAuthorId(author_id: string) {
+    if (!author_id) {
+      throw new Error("Author ID is required!");
+    }
+
+    try {
+      const query = `
+      SELECT
+        b.id AS book_id,
+        b.title,
+        b.description,
+        b.published_date,
+        b.pages,
+        b.price,
+        b.cover_image_url,
+        b.state
+      FROM books b
+      INNER JOIN book_authors ba ON ba.book_id = b.id
+      WHERE ba.author_id = $1
+      ORDER BY b.title ASC
+    `;
+
+      const result = await pool.query(query, [author_id]);
+
+      return result.rows;
+    } catch (error: any) {
+      console.error("Error retrieving books for author:", error.message);
+      throw new Error("Error fetching books for author: " + error.message);
+    }
+  }
 }
