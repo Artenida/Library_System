@@ -31,11 +31,12 @@ const UsersTable: React.FC<Props> = ({
     {
       key: "action",
       label: "Action",
-      render: () => (
+      render: (user: IUser) => (
         <Box>
           <IconButton
             onClick={(e) => {
               e.stopPropagation();
+              onEdit?.(user);
             }}
           >
             <EditIcon />
@@ -44,6 +45,7 @@ const UsersTable: React.FC<Props> = ({
             color="error"
             onClick={(e) => {
               e.stopPropagation();
+              onDelete?.(user);
             }}
           >
             <DeleteIcon />
