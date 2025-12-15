@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, IconButton } from "@mui/material";
-import AuthorsList from "./AuthorsList";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EntityList from "../layout/EntityList";
 
 interface IAuthor {
   author_id: string;
@@ -53,7 +53,14 @@ const AuthorsTable: React.FC<Props> = ({
     },
   ];
 
-  return <AuthorsList authors={authors} columns={columns} onRowClick={onRowClick} />;
+  return (
+    <EntityList
+      items={authors}
+      rowKey="author_id"
+      columns={columns}
+      onRowClick={onRowClick}
+    />
+  );
 };
 
 export default AuthorsTable;

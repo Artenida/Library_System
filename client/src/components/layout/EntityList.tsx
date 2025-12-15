@@ -8,28 +8,33 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import type { IBook } from "../../types/bookTypes";
 
-interface Column {
-  key: string;
+interface Column<T> {
+  key: keyof T | string;
   label: string;
-  render?: (book: IBook) => React.ReactNode;
+  render?: (item: T) => React.ReactNode;
 }
 
-interface BookListProps {
-  books: IBook[];
-  columns: Column[];
-  onRowClick?: (book: IBook) => void;
+interface Props<T> {
+  items: T[];
+  columns: Column<T>[];
+  rowKey: keyof T | string; // key for TableRow
+  onRowClick?: (item: T) => void;
 }
 
-const BookList: React.FC<BookListProps> = ({ books, columns, onRowClick }) => {
+const EntityList = <T extends Record<string, any>>({
+  items,
+  columns,
+  rowKey,
+  onRowClick,
+}: Props<T>) => {
   return (
-    <TableContainer component={Paper} sx={{ mt: 3 }}>
+    <TableContainer component={Paper}>
       <Table>
         <TableHead>
           <TableRow>
             {columns.map((col) => (
-              <TableCell key={col.key}>
+              <TableCell key={col.key as string}>
                 <strong>{col.label}</strong>
               </TableCell>
             ))}
@@ -37,17 +42,17 @@ const BookList: React.FC<BookListProps> = ({ books, columns, onRowClick }) => {
         </TableHead>
 
         <TableBody>
-          {Array.isArray(books) &&
-            books.map((book) => (
+          {Array.isArray(items) &&
+            items.map((item) => (
               <TableRow
-                key={book.book_id}
+                key={item[rowKey]}
                 hover
                 sx={{ cursor: onRowClick ? "pointer" : "default" }}
-                onClick={() => onRowClick?.(book)}
+                onClick={() => onRowClick?.(item)}
               >
                 {columns.map((col) => (
-                  <TableCell key={col.key}>
-                    {col.render ? col.render(book) : (book as any)[col.key]}
+                  <TableCell key={col.key as string}>
+                    {col.render ? col.render(item) : item[col.key]}
                   </TableCell>
                 ))}
               </TableRow>
@@ -58,4 +63,4 @@ const BookList: React.FC<BookListProps> = ({ books, columns, onRowClick }) => {
   );
 };
 
-export default BookList;
+export default EntityList;

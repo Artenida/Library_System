@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, IconButton } from "@mui/material";
-import GenresList from "./GenresList";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EntityList from "../layout/EntityList";
 
 interface IGenre {
   genre_id: string;
@@ -51,7 +51,14 @@ const GenresTable: React.FC<Props> = ({
     },
   ];
 
-  return <GenresList genres={genres} columns={columns} onRowClick={onRowClick} />;
+  return (
+    <EntityList
+      items={genres}
+      rowKey="genre_id"
+      columns={columns}
+      onRowClick={onRowClick}
+    />
+  );
 };
 
 export default GenresTable;

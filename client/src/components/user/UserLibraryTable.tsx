@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Chip, Box, Typography } from "@mui/material";
 import type { IBook } from "../../types/bookTypes";
-import BookList from "../books/BookList";
+import EntityList from "../layout/EntityList";
 
 interface Props {
   books: IBook[];
@@ -85,7 +85,14 @@ const LibraryTable: React.FC<Props> = ({ books, onTake, onRowClick }) => {
     },
   ];
 
-  return <BookList books={books} columns={columns} onRowClick={onRowClick} />;
+  return (
+    <EntityList
+      items={books}
+      rowKey="book_id"
+      columns={columns}
+      onRowClick={onRowClick}
+    />
+  );
 };
 
 export default LibraryTable;

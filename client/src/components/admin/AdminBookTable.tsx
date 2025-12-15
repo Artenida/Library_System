@@ -2,7 +2,7 @@ import { Box, Chip, IconButton, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import type { IBook } from "../../types/bookTypes";
-import BookList from "../books/BookList";
+import EntityList from "../layout/EntityList";
 
 interface Props {
   books: IBook[];
@@ -132,7 +132,14 @@ const AdminBookTable: React.FC<Props> = ({ books, onRowClick }) => {
     },
   ];
 
-  return <BookList books={books} columns={columns} onRowClick={onRowClick} />;
+  return (
+    <EntityList
+      items={books}
+      rowKey="book_id"
+      columns={columns}
+      onRowClick={onRowClick}
+    />
+  );
 };
 
 export default AdminBookTable;
