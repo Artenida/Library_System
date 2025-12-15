@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { CircularProgress, Container, Box } from "@mui/material";
+import { CircularProgress, Container, Box, Button } from "@mui/material";
 import {
+  createAuthorThunk,
   deleteAuthorThunk,
   getAuthorsThunk,
   updateAuthorThunk,
@@ -9,6 +10,7 @@ import {
 import AuthorsTable from "../../components/admin/AuthorsTable";
 import { useNavigate } from "react-router-dom";
 import EditAuthorModal from "../../components/modals/EditAuthorModal";
+import CreateAuthorModal from "../../components/modals/CreateAuthorModal";
 
 interface IAuthor {
   author_id: string;
@@ -22,6 +24,7 @@ const Authors = () => {
   const { authors, loading } = useAppSelector((state) => state.author);
 
   const [editingAuthor, setEditingAuthor] = useState<IAuthor | null>(null);
+  const [creatingAuthor, setCreatingAuthor] = useState(false);
 
   useEffect(() => {
     dispatch(getAuthorsThunk());
@@ -55,6 +58,12 @@ const Authors = () => {
     setEditingAuthor(null);
   };
 
+  const handleSaveCreate = async (newAuthor: Omit<IAuthor, "author_id">) => {
+    await dispatch(createAuthorThunk(newAuthor)).unwrap();
+    dispatch(getAuthorsThunk());
+    setCreatingAuthor(false);
+  };
+
   if (loading)
     return (
       <Box display="flex" justifyContent="center" mt={5}>
@@ -64,6 +73,14 @@ const Authors = () => {
 
   return (
     <Container sx={{ mt: 3 }}>
+      <Button
+        variant="contained"
+        onClick={() => setCreatingAuthor(true)}
+        sx={{ mb: 2 }}
+      >
+        Create Author
+      </Button>
+
       <AuthorsTable
         authors={authors}
         onRowClick={handleRowClick}
@@ -75,6 +92,11 @@ const Authors = () => {
         author={editingAuthor}
         onClose={() => setEditingAuthor(null)}
         onSave={handleSaveEdit}
+      />
+      <CreateAuthorModal
+        open={creatingAuthor}
+        onClose={() => setCreatingAuthor(false)}
+        onSave={handleSaveCreate}
       />
     </Container>
   );
