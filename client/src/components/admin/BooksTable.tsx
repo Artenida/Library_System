@@ -1,8 +1,5 @@
 import React from "react";
 import type { IBook } from "../../types/bookTypes";
-import { Box, IconButton } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import EntityList from "../layout/EntityList";
 
 interface BooksTableProps {
@@ -15,8 +12,6 @@ interface BooksTableProps {
 const BooksTable: React.FC<BooksTableProps> = ({
   books,
   onRowClick,
-  onEdit,
-  onDelete,
 }) => {
   const columns = [
     { key: "title", label: "Title" },

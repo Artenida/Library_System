@@ -2,7 +2,6 @@ import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { Typography, CircularProgress } from "@mui/material";
-import type { IBook } from "../../types/bookTypes";
 import { getGenreBooksThunk } from "../../store/thunks/genreThunks";
 import BooksTable from "../../components/admin/BooksTable";
 
@@ -16,14 +15,6 @@ const GenreBooks = () => {
       dispatch(getGenreBooksThunk(genre_id));
     }
   }, [dispatch, genre_id]);
-
-  const handleEdit = (book: IBook) => {
-    console.log("Edit book:", book);
-  };
-
-  const handleDelete = (book: IBook) => {
-    console.log("Delete book:", book.book_id);
-  };
 
   if (loading) return <CircularProgress />;
 
@@ -40,8 +31,6 @@ const GenreBooks = () => {
       ) : (
         <BooksTable
           books={books}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
           onRowClick={(book) => console.log("Book clicked:", book)}
         />
       )}
