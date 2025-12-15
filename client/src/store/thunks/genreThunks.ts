@@ -97,7 +97,7 @@ export const getGenreBooksThunk = createAsyncThunk(
       if (!token) return rejectWithValue("Missing token");
 
       const res = await getGenreBooksService(genreId, token);
-      return res.data.books;
+      return res.data;
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch genre books"

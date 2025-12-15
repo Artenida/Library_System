@@ -103,11 +103,12 @@ const genreSlice = createSlice({
       })
       .addCase(getGenreBooksThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.books = action.payload;
+        state.books = action.payload.books || [];
       })
       .addCase(getGenreBooksThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+        state.books = []; // clear books if error
       });
   },
 });
