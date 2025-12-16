@@ -39,7 +39,11 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
     if (book) {
       setTitle(book.title);
       setDescription(book.description || "");
-      setPublishedDate(book.published_date);
+      setPublishedDate(
+        book.published_date
+          ? new Date(book.published_date).toISOString().split("T")[0]
+          : ""
+      );
       setPages(book.pages);
       setPrice(book.price);
       setCoverImage(book.cover_image_url || "");
@@ -62,7 +66,7 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
       ...book,
       title,
       description,
-      published_date: publishedDate,
+      published_date: new Date(publishedDate).toISOString(),
       pages,
       price,
       cover_image_url: coverImage,
