@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { CircularProgress, Container, Box } from "@mui/material";
+import { CircularProgress, Container, Box, Button } from "@mui/material";
 import {
+  createUserThunk,
   deleteUserThunk,
   getUsersThunk,
   updateUserThunk,
@@ -9,6 +10,7 @@ import {
 import UsersTable from "../../components/admin/UsersTable";
 import { useNavigate } from "react-router-dom";
 import EditUserModal from "../../components/modals/EditUserModal";
+import CreateUserModal from "../../components/modals/CreateUserModal";
 
 interface IUser {
   id: string;
@@ -23,6 +25,7 @@ const Users = () => {
   const { users, loading } = useAppSelector((state) => state.user);
 
   const [editingUser, setEditingUser] = useState<IUser | null>(null);
+  const [creatingUser, setCreatingUser] = useState(false);
 
   useEffect(() => {
     dispatch(getUsersThunk());
@@ -65,6 +68,21 @@ const Users = () => {
     }
   };
 
+  const handleCreateUser = async (data: {
+    username: string;
+    email: string;
+    password: string;
+    role: string;
+  }) => {
+    try {
+      await dispatch(createUserThunk(data)).unwrap();
+      dispatch(getUsersThunk());
+      setCreatingUser(false);
+    } catch (err) {
+      console.error("Create failed", err);
+    }
+  };
+
   if (loading)
     return (
       <Box display="flex" justifyContent="center" mt={5}>
@@ -75,6 +93,12 @@ const Users = () => {
   return (
     <>
       <Container sx={{ mt: 3 }}>
+        <Box mb={2}>
+          <Button variant="contained" onClick={() => setCreatingUser(true)}>
+            Create User
+          </Button>
+        </Box>
+
         <UsersTable
           users={users}
           onRowClick={handleRowClick}
@@ -87,6 +111,12 @@ const Users = () => {
           user={editingUser}
           onClose={() => setEditingUser(null)}
           onSave={handleSaveEdit}
+        />
+
+        <CreateUserModal
+          open={creatingUser}
+          onClose={() => setCreatingUser(false)}
+          onSave={handleCreateUser}
         />
       </Container>
     </>

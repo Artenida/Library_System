@@ -1,5 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { deleteUserService, getUsersService, updateUserService } from "../../services/userService";
+import {
+  createUserService,
+  deleteUserService,
+  getUsersService,
+  updateUserService,
+} from "../../services/userService";
 import type { RootState } from "../store";
 
 export const getUsersThunk = createAsyncThunk(
@@ -18,6 +23,26 @@ export const getUsersThunk = createAsyncThunk(
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch users"
       );
+    }
+  }
+);
+
+export const createUserThunk = createAsyncThunk(
+  "user/create",
+  async (
+    data: { username: string; email: string; password: string; role: string },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+
+      if (!token) return rejectWithValue("Missing token");
+
+      const res = await createUserService(data, token);
+      return res.data.user;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Create failed");
     }
   }
 );
