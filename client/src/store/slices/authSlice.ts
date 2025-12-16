@@ -38,6 +38,9 @@ const authSlice = createSlice({
       localStorage.removeItem("access_token");
       localStorage.removeItem("user");
     },
+    resetSuccess: (state) => {
+    state.success = false;
+  },
   },
 
   extraReducers: (builder) => {
@@ -62,12 +65,12 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state: any, action: any) => {
+      .addCase(registerUser.fulfilled, (state: any) => {
         state.loading = false;
         state.success = true;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-        state.isLoggedIn = true;
+        state.user = null;
+        state.token = null;
+        state.isLoggedIn = false;
       })
       .addCase(registerUser.rejected, (state: any, action: any) => {
         state.loading = false;
@@ -76,5 +79,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, resetSuccess } = authSlice.actions;
 export default authSlice.reducer;
