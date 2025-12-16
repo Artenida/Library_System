@@ -83,7 +83,19 @@ export class Book {
     try {
       await client.query("BEGIN");
 
-      const insertBookQuery = `INSERT INTO books (title, description, published_date, pages, price, cover_image_url, state) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id AS book_id, *`;
+      const insertBookQuery = `
+        INSERT INTO books (
+          title,
+          description,
+          published_date,
+          pages,
+          price,
+          cover_image_url,
+          state
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id
+      `;
 
       const bookValues = [
         data.title,
@@ -97,7 +109,7 @@ export class Book {
 
       const bookResult = await client.query(insertBookQuery, bookValues);
       const createdBook = bookResult.rows[0];
-      const book_id = createdBook.book_id;
+      const book_id = createdBook.id;
 
       // Insert Authors
       for (const author_id of data.author_ids) {
@@ -117,7 +129,25 @@ export class Book {
 
       await client.query("COMMIT");
 
-      const formattedQuery = `${BASE_QUERY} WHERE b.id = $1 ORDER BY ub.created_at DESC`;
+      const formattedQuery = `${BASE_QUERY}
+        FROM books b
+        LEFT JOIN book_authors ba ON ba.book_id = b.id
+        LEFT JOIN authors a ON ba.author_id = a.id
+        LEFT JOIN book_genres bg ON bg.book_id = b.id
+        LEFT JOIN genres g ON bg.genre_id = g.id
+        LEFT JOIN user_books ub 
+        ON ub.book_id = b.id AND ub.status IN ('reading', 'completed')
+        LEFT JOIN users u ON ub.user_id = u.id
+        WHERE b.id = $1 
+        GROUP BY
+          b.id,
+          b.title,
+          b.description,
+          b.published_date,
+          b.pages,
+          b.price,
+          b.cover_image_url,
+          b.state`;
       const fullResult = await pool.query(formattedQuery, [book_id]);
 
       const books = formatBooks(fullResult.rows);
@@ -125,7 +155,8 @@ export class Book {
       return books[0];
     } catch (error: any) {
       await client.query("ROLLBACK");
-      throw new Error("Failed to create book");
+      console.error("CreateBook error:", error);
+      throw error;
     } finally {
       client.release();
     }
