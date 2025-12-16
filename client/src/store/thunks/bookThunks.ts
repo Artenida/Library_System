@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 import {
   borrowBookService,
+  createBookService,
   deleteBookService,
   getBooks,
   getSingleBook,
@@ -9,7 +10,7 @@ import {
   searchBooksByGenre,
   updateBookService,
 } from "../../services/bookService";
-import type { IBook } from "../../types/bookTypes";
+import type { CreateBookBody, IBook } from "../../types/bookTypes";
 import { isAxiosError } from "axios";
 
 export const fetchBooks = createAsyncThunk<
@@ -59,6 +60,23 @@ export const fetchUserBooks = createAsyncThunk<
 
   return await getUserBooks(user_id, token);
 });
+
+export const createBook = createAsyncThunk<
+  IBook,
+  CreateBookBody,
+  { state: RootState }
+>(
+  "books/createBook",
+  async (book, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().auth.token;
+      if (!token) throw new Error("User not authenticated");
+      return await createBookService(book, token);
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 export const updateBook = createAsyncThunk<IBook, IBook, { state: RootState }>(
   "books/updateBook",

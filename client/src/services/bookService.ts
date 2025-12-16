@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { IBook } from "../types/bookTypes";
+import type { CreateBookBody, IBook } from "../types/bookTypes";
 
 const API_URL = "http://localhost:5000/api/books";
 
@@ -39,6 +39,20 @@ export const getUserBooks = async (
 
   return response.data.data;
 };
+
+export const createBookService = async (
+  book: CreateBookBody,
+  token: string
+): Promise<IBook> => {
+  const response = await axios.post(`${API_URL}/admin`, book, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data.data;
+};
+
 
 export const updateBookService = async (
   book: IBook,

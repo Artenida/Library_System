@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { IBook } from "../../types/bookTypes";
+import type { CreateBookBody, IBook } from "../../types/bookTypes";
 import {
   Box,
   Container,
@@ -7,12 +7,15 @@ import {
   InputAdornment,
   TextField,
   CircularProgress,
+  Button,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
 import AdminBookTable from "../../components/admin/AdminBookTable";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { useNavigate } from "react-router-dom";
 import {
+  createBook,
   deleteBook,
   fetchBooks,
   searchBooks,
@@ -20,6 +23,7 @@ import {
 } from "../../store/thunks/bookThunks";
 import { clearSearch } from "../../store/slices/bookSlice";
 import EditBookModal from "../../components/modals/EditBookModal";
+import CreateBookModal from "../../components/modals/CreateBookModal";
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
@@ -31,6 +35,8 @@ const Dashboard = () => {
   const [selectedBook, setSelectedBook] = useState<IBook | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   useEffect(() => {
     dispatch(clearSearch());
     dispatch(fetchBooks({ page: 1, limit: 10 }));
@@ -40,6 +46,16 @@ const Dashboard = () => {
 
   const handleRowClick = (book: IBook) => {
     navigate(`/dashboard/books/${book.book_id}`);
+  };
+
+  const handleCreateSave = async (newBook: CreateBookBody) => {
+    try {
+      await dispatch(createBook(newBook)).unwrap();
+      setIsModalOpen(false);
+      dispatch(fetchBooks({ page: 1, limit: 10 }));
+    } catch (err) {
+      alert("Failed to create book");
+    }
   };
 
   const handleSearchClick = () => {
@@ -88,7 +104,8 @@ const Dashboard = () => {
           mt: 2,
           mb: 3,
           display: "flex",
-          justifyContent: "center",
+          flexDirection: "column",
+          gap: 2,
         }}
       >
         <Box sx={{ width: "100%" }}>
@@ -120,6 +137,15 @@ const Dashboard = () => {
             }}
           />
         </Box>
+
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setIsModalOpen(true)}
+          sx={{ alignSelf: "flex-start" }}
+        >
+          Create Book
+        </Button>
       </Container>
 
       <Container sx={{ mt: 3 }}>
@@ -142,6 +168,12 @@ const Dashboard = () => {
         onClose={() => setIsEditModalOpen(false)}
         book={selectedBook}
         onSave={handleEditSave}
+      />
+
+      <CreateBookModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleCreateSave}
       />
     </>
   );
