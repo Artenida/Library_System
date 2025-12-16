@@ -101,14 +101,28 @@ export class User {
     }
   }
 
-  static async deleteUser(id: String): Promise<void> {
+  static async deleteUser(id: string): Promise<void> {
     try {
-      const result = await pool.query(
-        `DELETE FROM users WHERE id = $1 RETURNING id`,
-        [id]
-      );
+      // Check if the user has any active books
+      const checkQuery = `
+      SELECT COUNT(*) 
+      FROM user_books 
+      WHERE user_id = $1 
+        AND status IN ('reading', 'completed')
+    `;
+      const checkResult = await pool.query(checkQuery, [id]);
 
-      if (result.rows.length === 0) throw new Error("User not found!");
+      if (parseInt(checkResult.rows[0].count) > 0) {
+        throw new Error("Cannot delete user: User has active books!");
+      }
+
+      // Delete the user
+      const deleteQuery = `DELETE FROM users WHERE id = $1 RETURNING id`;
+      const result = await pool.query(deleteQuery, [id]);
+
+      if (result.rows.length === 0) {
+        throw new Error("User not found!");
+      }
     } catch (error: any) {
       console.error("Error deleting user:", error.message);
       throw new Error(error.message);

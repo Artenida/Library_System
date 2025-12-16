@@ -40,11 +40,15 @@ const Users = () => {
   };
 
   const handleDelete = async (user: IUser) => {
+    if (!window.confirm(`Delete user "${user.username}"?`)) return;
+
     try {
-      await dispatch(deleteUserThunk(user.id)).unwrap();
+      const message = await dispatch(deleteUserThunk(user.id)).unwrap();
+
+      alert(message);
       dispatch(getUsersThunk());
-    } catch (err) {
-      console.error("Delete failed", err);
+    } catch (error: any) {
+      alert(error); 
     }
   };
 
