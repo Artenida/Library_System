@@ -66,15 +66,25 @@ export class Author {
     if (!author_id) {
       throw new Error("Author id is required!");
     }
+
     try {
-      const query = `DELETE FROM authors WHERE id = $1`;
-      const result = await pool.query(query, [author_id]);
+      // Check if the author is linked to any books
+      const checkQuery = `SELECT COUNT(*) FROM book_authors WHERE author_id = $1`;
+      const checkResult = await pool.query(checkQuery, [author_id]);
+
+      if (parseInt(checkResult.rows[0].count) > 0) {
+        throw new Error("Cannot delete author: Author has associated books!");
+      }
+
+      // Delete the author
+      const deleteQuery = `DELETE FROM authors WHERE id = $1`;
+      const result = await pool.query(deleteQuery, [author_id]);
 
       if (result.rowCount === 0) {
         throw new Error("Author not found!");
       }
     } catch (error: any) {
-      console.error("Error deleting authors:", error.message);
+      console.error("Error deleting author:", error.message);
       throw new Error(error.message);
     }
   }
