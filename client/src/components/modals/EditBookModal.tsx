@@ -32,7 +32,6 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
   const [pages, setPages] = useState("");
   const [price, setPrice] = useState("");
   const [coverImage, setCoverImage] = useState("");
-  const [state, setState] = useState<"free" | "borrowed">("free");
   const [selectedAuthorId, setSelectedAuthorId] = useState<string>("");
   const [selectedGenreId, setSelectedGenreId] = useState<string>("");
 
@@ -44,7 +43,6 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
       setPages(book.pages);
       setPrice(book.price);
       setCoverImage(book.cover_image_url || "");
-      setState(book.state ?? "free");
       setSelectedAuthorId(book.authors?.[0]?.author_id || "");
       setSelectedGenreId(book.genres?.[0]?.genre_id || "");
     }
@@ -68,7 +66,6 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
       pages,
       price,
       cover_image_url: coverImage,
-      state,
       authors: selectedAuthor ? [selectedAuthor] : [],
       genres: selectedGenre ? [selectedGenre] : [],
     });
@@ -121,17 +118,6 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
             value={coverImage}
             onChange={(e) => setCoverImage(e.target.value)}
           />
-          <FormControl fullWidth>
-            <InputLabel>State</InputLabel>
-            <Select
-              value={state}
-              onChange={(e) => setState(e.target.value as "free" | "borrowed")}
-            >
-              <MenuItem value="free">Free</MenuItem>
-              <MenuItem value="borrowed">Borrowed</MenuItem>
-            </Select>
-          </FormControl>
-
           <FormControl fullWidth>
             <InputLabel>Author</InputLabel>
             <Select
