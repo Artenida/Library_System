@@ -53,6 +53,7 @@ const Profile = () => {
       navigate("/login");
     })
     .catch((err: any) => {
+      alert(err);
       console.error("Delete failed:", err);
     });
   };
