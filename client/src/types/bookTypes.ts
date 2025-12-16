@@ -2,7 +2,7 @@ export interface IBook {
   book_id?: string;
   title: string;
   description: string;
-  published_date: number;
+  published_date: string;
   pages: string;
   price: string;
   cover_image_url: string;

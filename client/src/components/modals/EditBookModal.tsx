@@ -28,7 +28,7 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [publishedDate, setPublishedDate] = useState(0);
+  const [publishedDate, setPublishedDate] = useState("");
   const [pages, setPages] = useState("");
   const [price, setPrice] = useState("");
   const [coverImage, setCoverImage] = useState("");
@@ -95,7 +95,7 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
             type="date"
             fullWidth
             value={publishedDate}
-            onChange={(e) => setPublishedDate(Number(e.target.value))}
+            onChange={(e) => setPublishedDate(e.target.value)}
             InputLabelProps={{ shrink: true }}
           />
           <TextField
