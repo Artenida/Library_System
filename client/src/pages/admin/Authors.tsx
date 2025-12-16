@@ -34,9 +34,16 @@ const Authors = () => {
     navigate(`/dashboard/authors/${author.author_id}`);
   };
 
-  const handleDelete = (author: IAuthor) => {
-    if (window.confirm(`Delete author "${author.name}"?`)) {
-      dispatch(deleteAuthorThunk(author.author_id));
+  const handleDelete = async (author: IAuthor) => {
+    if (!window.confirm(`Delete author "${author.name}"?`)) return;
+
+    try {
+      const message = await dispatch(
+        deleteAuthorThunk(author.author_id)
+      ).unwrap();
+      alert(message);
+    } catch (error: any) {
+      alert(error);
     }
   };
 
