@@ -24,10 +24,9 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    if (!isSearching && !searchTerm) {
-      dispatch(fetchBooks({ page: 1, limit: 10 }));
-    }
-  }, [dispatch, isSearching, searchTerm]);
+    dispatch(clearSearch());
+    dispatch(fetchBooks({ page: 1, limit: 10 }));
+  }, [dispatch]);
 
   const displayedBooks = isSearching ? searchResults : books || [];
 
