@@ -12,8 +12,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import AdminBookTable from "../../components/admin/AdminBookTable";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { useNavigate } from "react-router-dom";
-import { fetchBooks, searchBooks } from "../../store/thunks/bookThunks";
+import { fetchBooks, searchBooks, updateBook } from "../../store/thunks/bookThunks";
 import { clearSearch } from "../../store/slices/bookSlice";
+import EditBookModal from "../../components/modals/EditBookModal";
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
@@ -22,6 +23,8 @@ const Dashboard = () => {
   const { searchResults, isSearching } = useAppSelector((s) => s.books);
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBook, setSelectedBook] = useState<IBook | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(clearSearch());
@@ -39,6 +42,27 @@ const Dashboard = () => {
       dispatch(clearSearch());
     } else {
       dispatch(searchBooks({ genre: searchTerm }));
+    }
+  };
+
+  const handleEditClick = (book: IBook) => {
+    setSelectedBook(book);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteClick = async (book: IBook) => {
+    if (!window.confirm(`Are you sure you want to delete "${book.title}"?`)) return;
+    
+  };
+
+  const handleEditSave = async (updatedBook: IBook) => {
+    try {
+      await dispatch(updateBook(updatedBook)).unwrap();
+      setIsEditModalOpen(false);
+      dispatch(fetchBooks({ page: 1, limit: 10 }));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update book");
     }
   };
 
@@ -82,15 +106,28 @@ const Dashboard = () => {
           />
         </Box>
       </Container>
+
       <Container sx={{ mt: 3 }}>
         {loading ? (
           <Box display="flex" justifyContent="center" mt={5}>
             <CircularProgress />
           </Box>
         ) : (
-          <AdminBookTable books={displayedBooks} onRowClick={handleRowClick} />
+          <AdminBookTable
+            books={displayedBooks}
+            onRowClick={handleRowClick}
+            onEditClick={handleEditClick}
+            onDeleteClick={handleDeleteClick}
+          />
         )}
       </Container>
+
+      <EditBookModal
+        open={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        book={selectedBook}
+        onSave={handleEditSave}
+      />
     </>
   );
 };

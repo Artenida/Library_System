@@ -7,9 +7,16 @@ import EntityList from "../layout/EntityList";
 interface Props {
   books: IBook[];
   onRowClick: (book: IBook) => void;
+  onEditClick: (book: IBook) => void;
+  onDeleteClick: (book: IBook) => void;
 }
 
-const AdminBookTable: React.FC<Props> = ({ books, onRowClick }) => {
+const AdminBookTable: React.FC<Props> = ({
+  books,
+  onRowClick,
+  onEditClick,
+  onDeleteClick,
+}) => {
   const columns = [
     {
       key: "cover",
@@ -110,11 +117,12 @@ const AdminBookTable: React.FC<Props> = ({ books, onRowClick }) => {
     {
       key: "actions",
       label: "Actions",
-      render: () => (
+      render: (b: IBook) => (
         <Box>
           <IconButton
             onClick={(e) => {
               e.stopPropagation();
+              onEditClick(b);
             }}
           >
             <EditIcon />
@@ -123,6 +131,7 @@ const AdminBookTable: React.FC<Props> = ({ books, onRowClick }) => {
             color="error"
             onClick={(e) => {
               e.stopPropagation();
+              onDeleteClick(b);
             }}
           >
             <DeleteIcon />
