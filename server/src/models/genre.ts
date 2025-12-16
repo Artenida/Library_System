@@ -72,8 +72,17 @@ export class Genre {
     }
 
     try {
-      const query = `DELETE FROM genres WHERE id = $1`;
-      const result = await pool.query(query, [genre_id]);
+      // Check if the genre is linked to any books
+      const checkQuery = `SELECT COUNT(*) FROM book_genres WHERE genre_id = $1`;
+      const checkResult = await pool.query(checkQuery, [genre_id]);
+
+      if (parseInt(checkResult.rows[0].count) > 0) {
+        throw new Error("Cannot delete genre: Genre is associated with books!");
+      }
+
+      // Delete the genre
+      const deleteQuery = `DELETE FROM genres WHERE id = $1`;
+      const result = await pool.query(deleteQuery, [genre_id]);
 
       if (result.rowCount === 0) {
         throw new Error("Genre not found!");
