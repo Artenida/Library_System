@@ -31,8 +31,9 @@ const CreateBookModal = ({ open, onClose, onSave }: Props) => {
   const [pages, setPages] = useState("");
   const [price, setPrice] = useState("");
   const [coverImage, setCoverImage] = useState("");
-  const [authorId, setAuthorId] = useState("");
-  const [genreId, setGenreId] = useState("");
+
+  const [authorIds, setAuthorIds] = useState<string[]>([]);
+  const [genreIds, setGenreIds] = useState<string[]>([]);
 
   const handleSave = () => {
     onSave({
@@ -45,45 +46,104 @@ const CreateBookModal = ({ open, onClose, onSave }: Props) => {
       price: price ? Number(price) : undefined,
       cover_image_url: coverImage,
       state: "free",
-      author_ids: authorId ? [authorId] : [],
-      genre_ids: genreId ? [genreId] : [],
+      author_ids: authorIds,
+      genre_ids: genreIds,
     });
   };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>Create Book</DialogTitle>
+
       <DialogContent>
         <Box display="flex" flexDirection="column" gap={2} mt={1}>
-          <TextField label="Title" value={title} onChange={e => setTitle(e.target.value)} />
-          <TextField label="Description" multiline rows={3} value={description} onChange={e => setDescription(e.target.value)} />
+          <TextField
+            label="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+
+          <TextField
+            label="Description"
+            multiline
+            rows={3}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
 
           <TextField
             label="Published Date"
             type="date"
             value={publishedDate}
-            onChange={e => setPublishedDate(e.target.value)}
+            onChange={(e) => setPublishedDate(e.target.value)}
             InputLabelProps={{ shrink: true }}
           />
 
-          <TextField label="Pages" type="number" value={pages} onChange={e => setPages(e.target.value)} />
-          <TextField label="Price" type="number" value={price} onChange={e => setPrice(e.target.value)} />
-          <TextField label="Cover Image URL" value={coverImage} onChange={e => setCoverImage(e.target.value)} />
+          <TextField
+            label="Pages"
+            type="number"
+            value={pages}
+            onChange={(e) => setPages(e.target.value)}
+          />
 
+          <TextField
+            label="Price"
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          />
+
+          <TextField
+            label="Cover Image URL"
+            value={coverImage}
+            onChange={(e) => setCoverImage(e.target.value)}
+          />
+
+          {/* Authors Multi-Select */}
           <FormControl>
-            <InputLabel>Author</InputLabel>
-            <Select value={authorId} onChange={e => setAuthorId(e.target.value)}>
-              {authors.map(a => (
-                <MenuItem key={a.author_id} value={a.author_id}>{a.name}</MenuItem>
+            <InputLabel>Authors</InputLabel>
+            <Select
+              multiple
+              value={authorIds}
+              onChange={(e) =>
+                setAuthorIds(e.target.value as string[])
+              }
+              renderValue={(selected) =>
+                authors
+                  .filter((a) => selected.includes(a.author_id))
+                  .map((a) => a.name)
+                  .join(", ")
+              }
+            >
+              {authors.map((a) => (
+                <MenuItem key={a.author_id} value={a.author_id}>
+                  {a.name}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
 
+          {/* Genres Multi-Select */}
           <FormControl>
-            <InputLabel>Genre</InputLabel>
-            <Select value={genreId} onChange={e => setGenreId(e.target.value)}>
-              {genres.map(g => (
-                <MenuItem key={g.genre_id} value={g.genre_id}>{g.name}</MenuItem>
+            <InputLabel>Genres</InputLabel>
+            <Select
+              multiple
+              value={genreIds}
+              onChange={(e) =>
+                setGenreIds(e.target.value as string[])
+              }
+              renderValue={(selected) =>
+                genres
+                  .filter((g) => selected.includes(g.genre_id))
+                  .map((g) => g.name)
+                  .join(", ")
+              }
+            >
+              {genres.map((g) => (
+                <MenuItem key={g.genre_id} value={g.genre_id}>
+                  {g.name}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -92,7 +152,13 @@ const CreateBookModal = ({ open, onClose, onSave }: Props) => {
 
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleSave}>Create</Button>
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          disabled={!title || !authorIds.length || !genreIds.length}
+        >
+          Create
+        </Button>
       </DialogActions>
     </Dialog>
   );
