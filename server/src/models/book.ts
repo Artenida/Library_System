@@ -229,7 +229,7 @@ export class Book {
       return result.rows.length > 0;
     } catch (error: any) {
       console.error("Error soft deleting book:", error.message);
-      throw new Error("Failed to soft delete book");
+      throw new Error(error.message || "Failed to soft delete book");
     }
   }
 
@@ -312,7 +312,7 @@ export class Book {
       throw new Error("Failed to retrieve user books");
     }
   }
-  
+
   // HELPER METHODS
   static async findUserBookById(user_book_id: string) {
     const result = await pool.query(

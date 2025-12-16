@@ -12,7 +12,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import AdminBookTable from "../../components/admin/AdminBookTable";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { useNavigate } from "react-router-dom";
-import { fetchBooks, searchBooks, updateBook } from "../../store/thunks/bookThunks";
+import {
+  deleteBook,
+  fetchBooks,
+  searchBooks,
+  updateBook,
+} from "../../store/thunks/bookThunks";
 import { clearSearch } from "../../store/slices/bookSlice";
 import EditBookModal from "../../components/modals/EditBookModal";
 
@@ -51,8 +56,18 @@ const Dashboard = () => {
   };
 
   const handleDeleteClick = async (book: IBook) => {
-    if (!window.confirm(`Are you sure you want to delete "${book.title}"?`)) return;
-    
+    if (!book.book_id) return;
+
+    if (!window.confirm(`Are you sure you want to delete "${book.title}"?`))
+      return;
+
+    try {
+      const resultAction = await dispatch(deleteBook(book.book_id)).unwrap();
+      alert(resultAction);
+      dispatch(fetchBooks({ page: 1, limit: 10 }));
+    } catch (err: any) {
+      alert(err);
+    }
   };
 
   const handleEditSave = async (updatedBook: IBook) => {

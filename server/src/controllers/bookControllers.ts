@@ -133,13 +133,17 @@ export const softDeleteBook = async (req: AuthRequest, res: Response) => {
     if (!book_id)
       return res.status(400).json({ message: "Book ID is required" });
 
-    const success = await Book.deleteBook(book_id);
+    try {
+      const success = await Book.deleteBook(book_id);
 
-    if (!success) {
-      return res.status(404).json({ message: "Book not found" });
+      if (!success) {
+        return res.status(404).json({ message: "Book not found" });
+      }
+
+      return res.status(200).json({ message: "Book deleted successfully" });
+    } catch (err: any) {
+      return res.status(400).json({ message: err.message });
     }
-
-    return res.status(200).json({ message: "Book deleted successfully" });
   } catch (error: any) {
     console.error(error.message);
     return res.status(500).json({ message: "Failed to delete book" });

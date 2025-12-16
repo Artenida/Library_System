@@ -52,6 +52,18 @@ export const updateBookService = async (
   return response.data.data;
 };
 
+export const deleteBookService = async (
+  book_id: string,
+  token: string
+): Promise<{message: string}> => {
+  const response = await axios.delete(`${API_URL}/admin/${book_id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
 export const borrowBookService = async (
   book_id: string,
   data: { from_date: string; to_date?: string },
