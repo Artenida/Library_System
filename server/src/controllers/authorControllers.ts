@@ -118,6 +118,12 @@ export const deleteAuthor = async (
         .json({ success: false, message: "Author not found" });
     }
 
+    if (
+      error.message === "Cannot delete author: Author has associated books!"
+    ) {
+      return res.status(409).json({ success: false, message: error.message });
+    }
+
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };

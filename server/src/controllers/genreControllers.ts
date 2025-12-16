@@ -114,6 +114,12 @@ export const deleteGenre = async (
         .json({ success: false, message: "Genre not found" });
     }
 
+    if (
+      error.message === "Cannot delete genre: Genre is associated with books!"
+    ) {
+      return res.status(409).json({ success: false, message: error.message });
+    }
+
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
