@@ -32,34 +32,37 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
   const [pages, setPages] = useState("");
   const [price, setPrice] = useState("");
   const [coverImage, setCoverImage] = useState("");
-  const [selectedAuthorId, setSelectedAuthorId] = useState<string>("");
-  const [selectedGenreId, setSelectedGenreId] = useState<string>("");
+
+  const [authorIds, setAuthorIds] = useState<string[]>([]);
+  const [genreIds, setGenreIds] = useState<string[]>([]);
 
   useEffect(() => {
-    if (book) {
-      setTitle(book.title);
-      setDescription(book.description || "");
-      setPublishedDate(
-        book.published_date
-          ? new Date(book.published_date).toISOString().split("T")[0]
-          : ""
-      );
-      setPages(book.pages);
-      setPrice(book.price);
-      setCoverImage(book.cover_image_url || "");
-      setSelectedAuthorId(book.authors?.[0]?.author_id || "");
-      setSelectedGenreId(book.genres?.[0]?.genre_id || "");
-    }
+    if (!book) return;
+
+    setTitle(book.title);
+    setDescription(book.description || "");
+    setPublishedDate(
+      book.published_date
+        ? new Date(book.published_date).toISOString().split("T")[0]
+        : ""
+    );
+    setPages(book.pages ?? "");
+    setPrice(book.price ?? "");
+    setCoverImage(book.cover_image_url || "");
+
+    setAuthorIds(book.authors?.map((a) => a.author_id) || []);
+    setGenreIds(book.genres?.map((g) => g.genre_id) || []);
   }, [book]);
 
   const handleSave = () => {
     if (!book) return;
 
-    const selectedAuthor = authorsList.find(
-      (a) => a.author_id === selectedAuthorId
+    const updatedAuthors = authorsList.filter((a) =>
+      authorIds.includes(a.author_id)
     );
-    const selectedGenre = genresList.find(
-      (g) => g.genre_id === selectedGenreId
+
+    const updatedGenres = genresList.filter((g) =>
+      genreIds.includes(g.genre_id)
     );
 
     onSave({
@@ -70,14 +73,15 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
       pages,
       price,
       cover_image_url: coverImage,
-      authors: selectedAuthor ? [selectedAuthor] : [],
-      genres: selectedGenre ? [selectedGenre] : [],
+      authors: updatedAuthors,
+      genres: updatedGenres,
     });
   };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>Edit Book</DialogTitle>
+
       <DialogContent>
         <Box display="flex" flexDirection="column" gap={2} mt={1}>
           <TextField
@@ -85,7 +89,9 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
             fullWidth
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            required
           />
+
           <TextField
             label="Description"
             fullWidth
@@ -94,6 +100,7 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+
           <TextField
             label="Published Date"
             type="date"
@@ -102,6 +109,7 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
             onChange={(e) => setPublishedDate(e.target.value)}
             InputLabelProps={{ shrink: true }}
           />
+
           <TextField
             label="Pages"
             type="number"
@@ -109,6 +117,7 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
             value={pages}
             onChange={(e) => setPages(e.target.value)}
           />
+
           <TextField
             label="Price"
             type="number"
@@ -116,17 +125,28 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
+
           <TextField
             label="Cover Image URL"
             fullWidth
             value={coverImage}
             onChange={(e) => setCoverImage(e.target.value)}
           />
+
           <FormControl fullWidth>
-            <InputLabel>Author</InputLabel>
+            <InputLabel>Authors</InputLabel>
             <Select
-              value={selectedAuthorId}
-              onChange={(e) => setSelectedAuthorId(e.target.value)}
+              multiple
+              value={authorIds}
+              onChange={(e) =>
+                setAuthorIds(e.target.value as string[])
+              }
+              renderValue={(selected) =>
+                authorsList
+                  .filter((a) => selected.includes(a.author_id))
+                  .map((a) => a.name)
+                  .join(", ")
+              }
             >
               {authorsList.map((a) => (
                 <MenuItem key={a.author_id} value={a.author_id}>
@@ -137,10 +157,19 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
           </FormControl>
 
           <FormControl fullWidth>
-            <InputLabel>Genre</InputLabel>
+            <InputLabel>Genres</InputLabel>
             <Select
-              value={selectedGenreId}
-              onChange={(e) => setSelectedGenreId(e.target.value)}
+              multiple
+              value={genreIds}
+              onChange={(e) =>
+                setGenreIds(e.target.value as string[])
+              }
+              renderValue={(selected) =>
+                genresList
+                  .filter((g) => selected.includes(g.genre_id))
+                  .map((g) => g.name)
+                  .join(", ")
+              }
             >
               {genresList.map((g) => (
                 <MenuItem key={g.genre_id} value={g.genre_id}>
@@ -151,9 +180,14 @@ const EditBookModal = ({ open, onClose, book, onSave }: Props) => {
           </FormControl>
         </Box>
       </DialogContent>
+
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleSave}>
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          disabled={!title || !authorIds.length || !genreIds.length}
+        >
           Save
         </Button>
       </DialogActions>
