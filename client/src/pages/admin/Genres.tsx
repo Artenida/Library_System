@@ -36,9 +36,14 @@ const Genres = () => {
     setEditingGenre(genre);
   };
 
-  const handleDelete = (genre: IGenre) => {
-    if (window.confirm(`Delete genre "${genre.name}"?`)) {
-      dispatch(deleteGenreThunk(genre.genre_id));
+  const handleDelete = async (genre: IGenre) => {
+    if (!window.confirm(`Delete genre "${genre.name}"?`)) return;
+
+    try {
+      const message = await dispatch(deleteGenreThunk(genre.genre_id)).unwrap();
+      alert(message);
+    } catch (error: any) {
+      alert(error);
     }
   };
 
