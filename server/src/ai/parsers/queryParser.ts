@@ -1,7 +1,7 @@
 export function parseQuestionToSQL(question: string): string | null {
   const lower = question.toLowerCase().trim();
 
-  //"Who owns the most books?"
+  // "Who owns the most books?"
   if (
     (lower.includes("who") || lower.includes("which user")) &&
     lower.includes("most") &&
@@ -14,7 +14,8 @@ export function parseQuestionToSQL(question: string): string | null {
         u.email,
         COUNT(ub.id) as book_count
       FROM users u
-      LEFT JOIN user_books ub ON ub.user_id = u.id
+      LEFT JOIN user_books ub 
+        ON ub.user_id = u.id AND ub.status IN ('reading', 'completed')
       GROUP BY u.id, u.username, u.email
       ORDER BY book_count DESC
       LIMIT 1
@@ -51,10 +52,19 @@ export function parseQuestionToSQL(question: string): string | null {
   );
   if (expensiveMatch) {
     const numberMap: Record<string, number> = {
-      one: 1, two: 2, three: 3, four: 4, five: 5,
-      six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+      one: 1,
+      two: 2,
+      three: 3,
+      four: 4,
+      five: 5,
+      six: 6,
+      seven: 7,
+      eight: 8,
+      nine: 9,
+      ten: 10,
     };
-    const limit = numberMap[expensiveMatch[1]] || parseInt(expensiveMatch[1]) || 5;
+    const limit =
+      numberMap[expensiveMatch[1]] || parseInt(expensiveMatch[1]) || 5;
 
     return `
       SELECT 
@@ -78,11 +88,19 @@ export function parseQuestionToSQL(question: string): string | null {
   );
   if (cheapestMatch) {
     const numberMap: Record<string, number> = {
-      one: 1, two: 2, three: 3, four: 4, five: 5,
-      six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+      one: 1,
+      two: 2,
+      three: 3,
+      four: 4,
+      five: 5,
+      six: 6,
+      seven: 7,
+      eight: 8,
+      nine: 9,
+      ten: 10,
     };
-    const limit = cheapestMatch[1] 
-      ? (numberMap[cheapestMatch[1]] || parseInt(cheapestMatch[1]) || 5)
+    const limit = cheapestMatch[1]
+      ? numberMap[cheapestMatch[1]] || parseInt(cheapestMatch[1]) || 5
       : 5;
 
     return `
