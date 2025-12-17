@@ -2,13 +2,15 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 import {
   borrowBookService,
+  createBookService,
+  deleteBookService,
   getBooks,
   getSingleBook,
   getUserBooks,
   searchBooksByGenre,
   updateBookService,
 } from "../../services/bookService";
-import type { IBook } from "../../types/bookTypes";
+import type { CreateBookBody, IBook } from "../../types/bookTypes";
 import { isAxiosError } from "axios";
 
 export const fetchBooks = createAsyncThunk<
@@ -45,12 +47,34 @@ export const fetchBookDetails = createAsyncThunk<
   }
 );
 
-export const fetchUserBooks = createAsyncThunk(
-  "books/fetchUserBooks",
-  async (_, { getState }) => {
-    const token = (getState() as RootState).auth.token;
-    if (!token) throw new Error("User not authenticated");
-    return await getUserBooks(token);
+export const fetchUserBooks = createAsyncThunk<
+  IBook[], // return type
+  string, // argument type (user_id)
+  { state: RootState }
+>("books/fetchUserBooks", async (user_id, { getState }) => {
+  const token = getState().auth.token;
+
+  if (!token) {
+    throw new Error("User not authenticated");
+  }
+
+  return await getUserBooks(user_id, token);
+});
+
+export const createBook = createAsyncThunk<
+  IBook,
+  CreateBookBody,
+  { state: RootState }
+>(
+  "books/createBook",
+  async (book, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().auth.token;
+      if (!token) throw new Error("User not authenticated");
+      return await createBookService(book, token);
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
   }
 );
 
@@ -66,6 +90,22 @@ export const updateBook = createAsyncThunk<IBook, IBook, { state: RootState }>(
     }
   }
 );
+
+export const deleteBook = createAsyncThunk<
+  string,
+  string,
+  { state: RootState }
+>("books/deleteBook", async (book_id, { getState, rejectWithValue }) => {
+  try {
+    const token = getState().auth.token;
+    if (!token) throw new Error("User not authenticated");
+
+    const data = await deleteBookService(book_id, token);
+    return data.message;
+  } catch (err: any) {
+    return rejectWithValue(err.response?.data?.message || err.message);
+  }
+});
 
 export const borrowBook = createAsyncThunk<
   IBook,

@@ -2,6 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { IBook } from "../../types/bookTypes";
 import {
   borrowBook,
+  deleteBook,
   fetchBookDetails,
   fetchBooks,
   fetchUserBooks,
@@ -19,6 +20,8 @@ interface BookState {
   searchResults: any;
   isSearching: boolean;
   searchError: string | null;
+  deleteMessage: string | null,
+  deleteError: string | null,
 }
 
 const initialState: BookState = {
@@ -31,6 +34,8 @@ const initialState: BookState = {
   searchResults: [],
   isSearching: false,
   searchError: null,
+  deleteMessage: null,
+  deleteError: null,
 };
 
 const bookSlice = createSlice({
@@ -39,8 +44,8 @@ const bookSlice = createSlice({
   reducers: {
     clearSearch(state) {
       state.searchResults = [];
-      state.isSearching = false; // <-- reset the searching flag
-      state.searchError = null; // optional
+      state.isSearching = false; 
+      state.searchError = null; 
     },
   },
   extraReducers: (builder) => {
@@ -121,6 +126,21 @@ const bookSlice = createSlice({
         state.isSearching = false;
         state.searchError = action.payload as string;
         state.searchResults = [];
+      });
+
+      builder
+      .addCase(deleteBook.pending, (state) => {
+        state.loading = true;
+        state.deleteMessage = null;
+        state.deleteError = null;
+      })
+      .addCase(deleteBook.fulfilled, (state, action: PayloadAction<string>) => {
+        state.loading = false;
+        state.deleteMessage = action.payload; 
+      })
+      .addCase(deleteBook.rejected, (state, action) => {
+        state.loading = false;
+        state.deleteError = action.payload as string;
       });
   },
 });

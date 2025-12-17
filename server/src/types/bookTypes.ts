@@ -2,7 +2,7 @@ export interface IBook {
   book_id?: string;
   title: string;
   description: string;
-  published_date: number;
+  published_date: string;
   pages: string;
   price: string;
   cover_image_url: string;
@@ -34,7 +34,7 @@ export interface IUserWithBooks {
 
 export interface IUserBookWithDetails {
   user_book_id: string;
-  status: string; // e.g., "reading", "completed", etc.
+  status: string;
   created_at: string;
 
   book: IBookDetails;

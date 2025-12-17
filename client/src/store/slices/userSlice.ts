@@ -1,13 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { deleteUserThunk, updateUserThunk } from "../thunks/userThunks";
+import {
+  deleteUserThunk,
+  getUsersThunk,
+  updateUserThunk,
+} from "../thunks/userThunks";
 
 interface UserState {
+  users: any[];
   user: any;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: UserState = {
+  users: [],
   user: null,
   loading: false,
   error: null,
@@ -18,6 +24,20 @@ const userSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    builder
+      .addCase(getUsersThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUsersThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload;
+      })
+      .addCase(getUsersThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
     builder
       .addCase(updateUserThunk.pending, (state) => {
         state.loading = true;

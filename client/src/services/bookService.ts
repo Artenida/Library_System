@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { IBook } from "../types/bookTypes";
+import type { CreateBookBody, IBook } from "../types/bookTypes";
 
 const API_URL = "http://localhost:5000/api/books";
 
@@ -27,14 +27,32 @@ export const getSingleBook = async (
   return response.data;
 };
 
-export const getUserBooks = async (token: string): Promise<IBook[]> => {
-  const response = await axios.get(`${API_URL}/user/books`, {
+export const getUserBooks = async (
+  user_id: string,
+  token: string
+): Promise<IBook[]> => {
+  const response = await axios.get(`${API_URL}/user/${user_id}/books`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+
   return response.data.data;
 };
+
+export const createBookService = async (
+  book: CreateBookBody,
+  token: string
+): Promise<IBook> => {
+  const response = await axios.post(`${API_URL}/admin`, book, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data.data;
+};
+
 
 export const updateBookService = async (
   book: IBook,
@@ -46,6 +64,18 @@ export const updateBookService = async (
     },
   });
   return response.data.data;
+};
+
+export const deleteBookService = async (
+  book_id: string,
+  token: string
+): Promise<{message: string}> => {
+  const response = await axios.delete(`${API_URL}/admin/${book_id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
 };
 
 export const borrowBookService = async (

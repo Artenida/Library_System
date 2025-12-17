@@ -53,12 +53,11 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const data: Partial<IUser> = req.body;
-    const {user} = req as any;
+    const { user } = req as any;
 
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
-    if (!id)
-      return res.status(400).json({ message: "USer ID is required!" });
+    if (!id) return res.status(400).json({ message: "USer ID is required!" });
 
     if (user.role !== "admin" && user.id !== id) {
       return res.status(403).json({ message: "Access denied" });
@@ -85,8 +84,7 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
 export const deleteUser = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    if (!id)
-      return res.status(400).json({ message: "User ID is required" });
+    if (!id) return res.status(400).json({ message: "User ID is required" });
 
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
@@ -102,9 +100,15 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
     });
   } catch (error: any) {
     console.error("Delete user error:", error.message);
+    
     if (error.message.includes("not found")) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    if (error.message.includes("active books")) {
+      return res.status(409).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Server error" });
   }
 };

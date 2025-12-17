@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
 import { registerUser } from "../../store/thunks/authThunks";
+import { resetSuccess } from "../../store/slices/authSlice";
 
 const Register = () => {
   const dispatch = useAppDispatch();
@@ -24,8 +25,9 @@ const Register = () => {
    useEffect(() => {
     if (success) {
       navigate("/login");
+      dispatch(resetSuccess());
     }
-  }, [success, navigate]);
+  }, [success, navigate, dispatch]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

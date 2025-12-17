@@ -28,13 +28,11 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    if (!isSearching && !searchTerm) {
-      dispatch(fetchBooks({ page: 1, limit: 10 }));
-    }
-  }, [dispatch, isSearching ,searchTerm]);
+    dispatch(clearSearch());
+    dispatch(fetchBooks({ page: 1, limit: 10 }));
+  }, [dispatch]);
 
-  const displayedBooks =
-    isSearching ? searchResults : books || [];
+  const displayedBooks = isSearching ? searchResults : books || [];
 
   const handleRowClick = (book: IBook) => {
     navigate(`/books/${book.book_id}`);

@@ -72,8 +72,17 @@ export class Genre {
     }
 
     try {
-      const query = `DELETE FROM genres WHERE id = $1`;
-      const result = await pool.query(query, [genre_id]);
+      // Check if the genre is linked to any books
+      const checkQuery = `SELECT COUNT(*) FROM book_genres WHERE genre_id = $1`;
+      const checkResult = await pool.query(checkQuery, [genre_id]);
+
+      if (parseInt(checkResult.rows[0].count) > 0) {
+        throw new Error("Cannot delete genre: Genre is associated with books!");
+      }
+
+      // Delete the genre
+      const deleteQuery = `DELETE FROM genres WHERE id = $1`;
+      const result = await pool.query(deleteQuery, [genre_id]);
 
       if (result.rowCount === 0) {
         throw new Error("Genre not found!");
@@ -81,6 +90,37 @@ export class Genre {
     } catch (error: any) {
       console.error("Error deleting genre:", error.message);
       throw new Error(error.message);
+    }
+  }
+
+  static async getBooksByGenreId(genre_id: string) {
+    if (!genre_id) {
+      throw new Error("Genre ID is required!");
+    }
+
+    try {
+      const query = `
+      SELECT
+        b.id AS book_id,
+        b.title,
+        b.description,
+        b.published_date,
+        b.pages,
+        b.price,
+        b.cover_image_url,
+        b.state
+      FROM books b
+      INNER JOIN book_genres bg ON bg.book_id = b.id
+      WHERE bg.genre_id = $1
+      ORDER BY b.title ASC
+    `;
+
+      const result = await pool.query(query, [genre_id]);
+
+      return result.rows;
+    } catch (error: any) {
+      console.error("Error retrieving books for genre:", error.message);
+      throw new Error("Error fetching books for genre: " + error.message);
     }
   }
 }

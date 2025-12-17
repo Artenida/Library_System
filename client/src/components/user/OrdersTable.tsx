@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Button, Box, Typography, Chip } from "@mui/material";
 import type { IBook } from "../../types/bookTypes";
-import BookList from "../books/BookList";
 import EditOrderModal from "../modals/EditOrderModal";
+import EntityList from "../layout/EntityList";
 
 interface Props {
   books: IBook[];
@@ -131,7 +131,12 @@ const OrdersTable: React.FC<Props> = ({
 
   return (
     <>
-      <BookList books={books} columns={columns} onRowClick={onRowClick} />
+      <EntityList
+        items={books}
+        rowKey="book_id"
+        columns={columns}
+        onRowClick={onRowClick}
+      />
       <EditOrderModal
         open={openEdit}
         book={selectedBook}

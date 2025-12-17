@@ -114,6 +114,49 @@ export const deleteGenre = async (
         .json({ success: false, message: "Genre not found" });
     }
 
+    if (
+      error.message === "Cannot delete genre: Genre is associated with books!"
+    ) {
+      return res.status(409).json({ success: false, message: error.message });
+    }
+
     return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const getGenreBooks = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
+  try {
+    const genre_id = req.params.id;
+
+    if (!genre_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Genre ID is required",
+      });
+    }
+
+    const books = await Genre.getBooksByGenreId(genre_id);
+
+    if (!books || books.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No books found for this genre",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: books.length,
+      books,
+    });
+  } catch (error: any) {
+    console.error("Get genre books error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };

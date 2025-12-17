@@ -6,9 +6,10 @@ import {
   ListItemText,
   Toolbar,
 } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import BookIcon from "@mui/icons-material/Book";
 import PeopleIcon from "@mui/icons-material/People";
+import PersonIcon from "@mui/icons-material/Person";
+import CategoryIcon from "@mui/icons-material/Category";
 import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -33,13 +34,6 @@ const AdminSidebar = () => {
       <List>
         <ListItemButton onClick={() => navigate("/dashboard")}>
           <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Dashboard" />
-        </ListItemButton>
-
-        <ListItemButton onClick={() => navigate("/dashboard/books")}>
-          <ListItemIcon>
             <BookIcon />
           </ListItemIcon>
           <ListItemText primary="Books" />
@@ -50,6 +44,18 @@ const AdminSidebar = () => {
             <PeopleIcon />
           </ListItemIcon>
           <ListItemText primary="Users" />
+        </ListItemButton>
+        <ListItemButton onClick={() => navigate("/dashboard/authors")}>
+          <ListItemIcon>
+            <PersonIcon />
+          </ListItemIcon>
+          <ListItemText primary="Authors" />
+        </ListItemButton>
+        <ListItemButton onClick={() => navigate("/dashboard/genres")}>
+          <ListItemIcon>
+            <CategoryIcon />
+          </ListItemIcon>
+          <ListItemText primary="Genres" />
         </ListItemButton>
       </List>
     </Drawer>
