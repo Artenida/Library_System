@@ -27,8 +27,6 @@ export const AIAssistant: React.FC = () => {
   const exampleQueries = [
     "Who owns the most books?",
     "Which is the most popular book?",
-    "Show the 5 most expensive books",
-    "How many books are there?",
     "List all genres",
     "Show all authors",
     "What are the cheapest books?",
