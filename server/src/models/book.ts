@@ -253,7 +253,7 @@ export class Book {
 
       // 2. Soft delete
       const result = await pool.query(
-        `UPDATE books SET is_active = FALSE WHERE id = $1 RETURNING id AS book_id`,
+        `UPDATE books SET is_active = FALSE, state = 'deleted' WHERE id = $1 RETURNING id AS book_id`,
         [book_id]
       );
 

@@ -20,7 +20,7 @@ Notes:
 - Books can have multiple authors (use book_authors join table)
 - Books can have multiple genres (use book_genres join table)
 - Users own books through user_books table
-- Book state: 'free', 'borrowed'
+- Book state: 'free', 'borrowed', 'deleted'
 - User_Books status: 'reading', 'completed', 'returned', 'deleted', etc.
 `;
 
