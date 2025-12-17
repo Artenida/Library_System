@@ -8,17 +8,18 @@ export const AssistantTable = ({ data, headers }: Props) => {
 
   const firstRow = data[0];
 
-  // Build columns: map headers to object keys, or fallback to all keys
   const columns = headers
-    ? headers.map((header) => {
-        const key =
-          Object.keys(firstRow).find(
-            (k) => k.toLowerCase().replace(/_/g, " ") === header.toLowerCase()
-          ) || Object.keys(firstRow)[0]; // fallback if not found
-        return { header, key };
-      })
+    ? headers
+        .map((header) => {
+          const key =
+            Object.keys(firstRow).find(
+              (k) => k.toLowerCase() === header.toLowerCase()
+            ) || header;
+          return { header, key };
+        })
+        .filter((col) => !col.key.toLowerCase().endsWith("id"))
     : Object.keys(firstRow)
-        .filter((k) => k !== "id") // skip id if you want
+        .filter((k) => !k.toLowerCase().endsWith("id")) 
         .map((key) => ({ header: key, key }));
 
   return (
