@@ -64,6 +64,12 @@ const AdminSidebar = () => {
           </ListItemIcon>
           <ListItemText primary="AI Assistant" />
         </ListItemButton>
+        <ListItemButton onClick={() => navigate("/dashboard/insights")}>
+          <ListItemIcon>
+            <SmartToyIcon />
+          </ListItemIcon>
+          <ListItemText primary="Insights" />
+        </ListItemButton>
       </List>
     </Drawer>
   );
