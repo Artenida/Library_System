@@ -7,6 +7,7 @@ import booksReducer from "./slices/bookSlice";
 import userReducer from "./slices/userSlice";
 import authorReducer from "./slices/authorSlice";
 import genreReducer from "./slices/genreSlice";
+import aiReducer from "./slices/aiSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   books: booksReducer,
   author: authorReducer,
   genre: genreReducer,
+  ai: aiReducer, 
 });
 
 const persistConfig = {

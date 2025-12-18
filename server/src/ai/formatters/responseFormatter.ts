@@ -30,28 +30,27 @@ export function formatAssistantResponse(
   const questionLower = question.toLowerCase();
 
   // Format answer based on question type
-  if (questionLower.includes("who owns the most") || questionLower.includes("who has the most")) {
+  if (
+    questionLower.includes("who owns the most") ||
+    questionLower.includes("who has the most")
+  ) {
     response.answer = `${firstRow.username} owns the most books with ${firstRow.book_count} book(s).`;
     response.tableHeaders = ["Username", "Email", "Book Count"];
   } else if (questionLower.includes("most popular book")) {
-    response.answer = `The most popular book is "${firstRow.title}" by ${firstRow.authors || "Unknown"}.`;
-    response.tableHeaders = ["Title", "Authors", "Genres", "Price", "Published Date"];
-  } else if (questionLower.includes("expensive")) {
-    response.answer = `Found ${results.length} expensive book(s). The most expensive is "${firstRow.title}" at ${firstRow.price}.`;
-    response.tableHeaders = ["Title", "Authors", "Price", "Published Date"];
-  } else if (questionLower.includes("cheapest")) {
-    response.answer = `Found ${results.length} cheap book(s). The cheapest is "${firstRow.title}" at ${firstRow.price}.`;
-    response.tableHeaders = ["Title", "Authors", "Price", "Published Date"];
-  } else if (questionLower.includes("how many books")) {
-    response.answer = `There are ${firstRow.total_books} book(s) in the library.`;
-    response.tableHeaders = ["Total Books"];
-  } else if (questionLower.includes("genre")) {
-    response.answer = `Found ${results.length} genre(s) in the library.`;
-    response.tableHeaders = ["Genre", "Book Count"];
-  } else if (questionLower.includes("author")) {
-    response.answer = `Found ${results.length} author(s) in the library.`;
-    response.tableHeaders = ["Author", "Birth Year", "Book Count"];
-  } else if (questionLower.includes("least") || questionLower.includes("fewest")) {
+    response.answer = `The most popular book is "${firstRow.title}" by ${
+      firstRow.authors || "Unknown"
+    }.`;
+    response.tableHeaders = [
+      "Title",
+      "Authors",
+      "Genres",
+      "Price",
+      "Published Date",
+    ];
+  } else if (
+    questionLower.includes("least") ||
+    questionLower.includes("fewest")
+  ) {
     response.answer = `${firstRow.username} has the fewest books with ${firstRow.book_count} book(s).`;
     response.tableHeaders = ["Username", "Email", "Book Count"];
   } else if (questionLower.includes("available")) {

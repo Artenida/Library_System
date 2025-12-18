@@ -65,31 +65,32 @@ export const createBook = createAsyncThunk<
   IBook,
   CreateBookBody,
   { state: RootState }
->(
-  "books/createBook",
-  async (book, { getState, rejectWithValue }) => {
-    try {
-      const token = getState().auth.token;
-      if (!token) throw new Error("User not authenticated");
-      return await createBookService(book, token);
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || error.message);
-    }
+>("books/createBook", async (book, { getState, rejectWithValue }) => {
+  try {
+    const token = getState().auth.token;
+    if (!token) throw new Error("User not authenticated");
+    return await createBookService(book, token);
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.message || error.message);
   }
-);
+});
 
-export const updateBook = createAsyncThunk<IBook, IBook, { state: RootState }>(
-  "books/updateBook",
-  async (book, { getState, rejectWithValue }) => {
-    try {
-      const token = getState().auth.token;
-      if (!token) throw new Error("User not authenticated");
-      return await updateBookService(book, token);
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || error.message);
-    }
+export const updateBook = createAsyncThunk<
+  void,
+  IBook,
+  { rejectValue: string }
+>("books/updateBook", async (book, { rejectWithValue, getState }) => {
+  try {
+    const state: any = getState();
+    const token = state.auth.token;
+
+    await updateBookService(book, token);
+  } catch (err: any) {
+    return rejectWithValue(
+      err.response?.data?.message || "Failed to update book"
+    );
   }
-);
+});
 
 export const deleteBook = createAsyncThunk<
   string,

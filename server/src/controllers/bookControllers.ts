@@ -123,7 +123,9 @@ export const updateBook = async (req: AuthRequest, res: Response) => {
     });
   } catch (error: any) {
     console.error("updateBook:", error.message);
-    return res.status(500).json({ message: "Failed to update book" });
+    return res.status(409).json({
+      message: error.message,
+    });
   }
 };
 
