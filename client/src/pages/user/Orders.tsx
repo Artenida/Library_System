@@ -23,13 +23,12 @@ const Orders = () => {
 
   const handleEdit = async (updatedBook: IBook) => {
     try {
-      console.log("Sending to backend:", updatedBook);
-
       await dispatch(updateBook(updatedBook)).unwrap();
 
       dispatch(fetchUserBooks(user?.id));
     } catch (error) {
       console.error("Failed to update book:", error);
+      window.alert(String(error));
     }
   };
 
