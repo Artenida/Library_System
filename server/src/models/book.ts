@@ -232,6 +232,15 @@ export class Book {
       await client.query("COMMIT");
     } catch (error: any) {
       await client.query("ROLLBACK");
+      // Unique constraint violation
+      if (error.code === "23505") {
+        if (error.constraint === "one_active_user_per_book") {
+          throw new Error(
+            "This book is already being read or completed by another user"
+          );
+        }
+      }
+
       throw new Error("Failed to update book: " + error.message);
     } finally {
       client.release();
@@ -253,7 +262,7 @@ export class Book {
 
       // 2. Soft delete
       const result = await pool.query(
-        `UPDATE books SET is_active = FALSE WHERE id = $1 RETURNING id AS book_id`,
+        `UPDATE books SET is_active = FALSE, state = 'deleted' WHERE id = $1 RETURNING id AS book_id`,
         [book_id]
       );
 

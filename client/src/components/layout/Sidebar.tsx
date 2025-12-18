@@ -10,6 +10,7 @@ import BookIcon from "@mui/icons-material/Book";
 import PeopleIcon from "@mui/icons-material/People";
 import PersonIcon from "@mui/icons-material/Person";
 import CategoryIcon from "@mui/icons-material/Category";
+import SmartToyIcon from "@mui/icons-material/SmartToy"; // <-- AI Assistant icon
 import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -56,6 +57,18 @@ const AdminSidebar = () => {
             <CategoryIcon />
           </ListItemIcon>
           <ListItemText primary="Genres" />
+        </ListItemButton>
+        <ListItemButton onClick={() => navigate("/dashboard/assistant")}>
+          <ListItemIcon>
+            <SmartToyIcon />
+          </ListItemIcon>
+          <ListItemText primary="AI Assistant" />
+        </ListItemButton>
+        <ListItemButton onClick={() => navigate("/dashboard/insights")}>
+          <ListItemIcon>
+            <SmartToyIcon />
+          </ListItemIcon>
+          <ListItemText primary="Insights" />
         </ListItemButton>
       </List>
     </Drawer>

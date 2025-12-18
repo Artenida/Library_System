@@ -15,6 +15,8 @@ import Authors from "../pages/admin/Authors";
 import Genres from "../pages/admin/Genres";
 import AuthorBooks from "../pages/admin/AuthorBooks";
 import GenreBooks from "../pages/admin/GenreBooks";
+import { AIAssistant } from "../pages/admin/AIAssistant";
+import InsightsPage from "../pages/admin/InsightsPage";
 
 const AppRoutes = () => {
   return (
@@ -49,6 +51,8 @@ const AppRoutes = () => {
           <Route path="users" element={<Users />} />
           <Route path="authors" element={<Authors />} />
           <Route path="genres" element={<Genres />} />
+          <Route path="assistant" element={<AIAssistant />} />
+          <Route path="insights" element={<InsightsPage />} />
           <Route path="users/:id" element={<UserBooks />} />
           <Route path="books/:id" element={<BookDetails />} />
           <Route path="authors/:author_id" element={<AuthorBooks />} />

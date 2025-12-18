@@ -20,20 +20,18 @@ const UserBooks = () => {
 
   const handleEdit = async (updatedBook: IBook) => {
     try {
-      console.log("Sending to backend:", updatedBook);
-
       await dispatch(updateBook(updatedBook)).unwrap();
 
       dispatch(fetchUserBooks(id));
     } catch (error) {
       console.error("Failed to update book:", error);
+
+      window.alert(String(error));
     }
   };
 
   const handleDelete = async (book: IBook) => {
     try {
-      console.log("Soft deleting book:", book.book_id);
-
       const deletedBook: IBook = {
         ...book,
         user_books: book.user_books?.map((ub) => ({
