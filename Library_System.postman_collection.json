@@ -1,0 +1,937 @@
+{
+	"info": {
+		"_postman_id": "07ef06f5-28a6-4f6b-b3c6-311c2466ec9e",
+		"name": "Library_System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40335222"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"angel_dev\",\r\n  \"email\": \"angel@example.com\",\r\n  \"password\": \"angel1234\",\r\n  \"role\": \"user\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/users/53aceb2a-55cb-4d96-b7c0-6f0b43440da4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users",
+								"53aceb2a-55cb-4d96-b7c0-6f0b43440da4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user_List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc1YmY5NGMyLTFiZTMtNDkyZC04OTFkLTM0MjgxMTM1MTg3MSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY1MDMzNzU1LCJleHAiOjE3NjUwMzczNTV9.BdFqgZRUz6DnL7MXqjN_nKRGczowSpjv3vn9Af4v9Pk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc1YmY5NGMyLTFiZTMtNDkyZC04OTFkLTM0MjgxMTM1MTg3MSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY1NDU5NTgxLCJleHAiOjE3NjU0NjMxODF9.zeDTG67LS26vGTbpz7hUKePDa1TMeoy8rJT7PZb8CEE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"john_dev\",\r\n  \"email\": \"john@example.com\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/users/75bf94c2-1be3-492d-891d-342811351871",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users",
+								"75bf94c2-1be3-492d-891d-342811351871"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"john_doe\",\r\n  \"email\": \"john@example.com\",\r\n  \"password\": \"Password123\",\r\n  \"role\": \"user\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/users/dd6d9e00-9f51-4230-bd56-57b1552e2eb1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users",
+								"dd6d9e00-9f51-4230-bd56-57b1552e2eb1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"admin@example.com\",\r\n  \"password\": \"admin1234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "author",
+			"item": [
+				{
+					"name": "Authors_List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTAzNTY1NiwiZXhwIjoxNzY1MDM5MjU2fQ.riVvPvq8xUXjKR3jXW9to-d_lPk7ffzCGAJikw_N00A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/authors",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"authors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Author_Books",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTAzNTY1NiwiZXhwIjoxNzY1MDM5MjU2fQ.riVvPvq8xUXjKR3jXW9to-d_lPk7ffzCGAJikw_N00A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/authors/6f9895c2-b6e7-4b12-ba69-06c79b8be329/books",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"authors",
+								"6f9895c2-b6e7-4b12-ba69-06c79b8be329",
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create_Author",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTAzNTY1NiwiZXhwIjoxNzY1MDM5MjU2fQ.riVvPvq8xUXjKR3jXW9to-d_lPk7ffzCGAJikw_N00A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"J.K. Rowling\",\r\n  \"birth_year\": 1965\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/authors",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"authors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_Author",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTAzNTY1NiwiZXhwIjoxNzY1MDM5MjU2fQ.riVvPvq8xUXjKR3jXW9to-d_lPk7ffzCGAJikw_N00A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Joannee Rowling\",\r\n  \"birth_year\": 1965\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/authors/bb73279f-eeeb-4773-b8f2-259eeb81ca01",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"authors",
+								"bb73279f-eeeb-4773-b8f2-259eeb81ca01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete_Author",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTAzNTY1NiwiZXhwIjoxNzY1MDM5MjU2fQ.riVvPvq8xUXjKR3jXW9to-d_lPk7ffzCGAJikw_N00A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/authors/cdde1d79-ca02-47c3-98de-314ba819a92b",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"authors",
+								"cdde1d79-ca02-47c3-98de-314ba819a92b"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "genre",
+			"item": [
+				{
+					"name": "Genres_List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTAzNTY1NiwiZXhwIjoxNzY1MDM5MjU2fQ.riVvPvq8xUXjKR3jXW9to-d_lPk7ffzCGAJikw_N00A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/genres",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"genres"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Genre_Books",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTAzNTY1NiwiZXhwIjoxNzY1MDM5MjU2fQ.riVvPvq8xUXjKR3jXW9to-d_lPk7ffzCGAJikw_N00A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/genres/360716ae-fa02-4726-b2ec-02fe493161e6/books",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"genres",
+								"360716ae-fa02-4726-b2ec-02fe493161e6",
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create_Genre",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTAzNTY1NiwiZXhwIjoxNzY1MDM5MjU2fQ.riVvPvq8xUXjKR3jXW9to-d_lPk7ffzCGAJikw_N00A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"New\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/genres",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"genres"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update_Genre",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTAzNTY1NiwiZXhwIjoxNzY1MDM5MjU2fQ.riVvPvq8xUXjKR3jXW9to-d_lPk7ffzCGAJikw_N00A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Historical Fiction\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/genres/f35eaef2-7ed7-49d2-9823-25f736ed91a1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"genres",
+								"f35eaef2-7ed7-49d2-9823-25f736ed91a1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete_Genre",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTAzNTY1NiwiZXhwIjoxNzY1MDM5MjU2fQ.riVvPvq8xUXjKR3jXW9to-d_lPk7ffzCGAJikw_N00A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/genres/f35eaef2-7ed7-49d2-9823-25f736ed91a1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"genres",
+								"f35eaef2-7ed7-49d2-9823-25f736ed91a1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "book",
+			"item": [
+				{
+					"name": "single_book",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTY1NjkxOCwiZXhwIjoxNzY1NjYwNTE4fQ.AaiebG-SNHl3CjqlOrq5FY6SL-pzNyJJ9GhzdC6Vmwk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/books/e08e2202-b57c-4047-b8db-1ac19819cda7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"books",
+								"e08e2202-b57c-4047-b8db-1ac19819cda7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-book",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTE5NTYwMSwiZXhwIjoxNzY1MTk5MjAxfQ.FCy9umUqLJVQCXSWcRCU2Gi4Za0mS6BHZ4nqwB0pYT0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Book Mistery\",\r\n  \"description\": \"A mystery novel about hidden secrets inside an old library.\",\r\n  \"published_date\": \"2021-09-15\",\r\n  \"pages\": 324,\r\n  \"price\": 19.99,\r\n  \"cover_image_url\": \"https://example.com/covers/silent-library.jpg\",\r\n  \"state\": \"free\",\r\n  \"author_ids\": [\"0df5d211-ad49-4292-87d8-edbc1ddb05f2\"],\r\n  \"genre_ids\": [\"360716ae-fa02-4726-b2ec-02fe493161e6\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/books/admin/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"books",
+								"admin",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_book",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTQ0NTE3MywiZXhwIjoxNzY1NDQ4NzczfQ.ttzpXnwadPe0h16q5kSd8WOZ_5SyUtJhKIlE4jd_liI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"book_id\": \"8fab9454-87f4-4b55-a84d-b6847c7c3726\",\r\n  \"title\": \"The Shiningg\",\r\n  \"description\": \"A writer faces supernatural horrors in a hotel.\",\r\n  \"published_date\": \"1977-01-17T23:00:00.000Z\",\r\n  \"state\": \"borrowed\",\r\n  \"pages\": 447,\r\n  \"price\": \"18.00\",\r\n  \"cover_image_url\": \"shining.jpg\",\r\n  \"authors\": [\r\n    {\r\n      \"author_id\": \"3af3f2c0-e8f5-4c11-a161-6b23ff5eee38\",\r\n      \"name\": \"Stephen King\",\r\n      \"birth_year\": 1930\r\n    }\r\n  ],\r\n  \"genres\": [\r\n    {\r\n      \"genre_id\": \"95a58946-0507-4b52-82e5-e463fc028d61\",\r\n      \"name\": \"Thriller\"\r\n    }\r\n  ],\r\n  \"user_books\": [\r\n    {\r\n      \"user_book_id\": \"f1d67806-5908-4217-8201-34c1086c3476\",\r\n      \"status\": \"returned\",\r\n      \"created_at\": \"2025-12-16T22:44:26.505003\",\r\n      \"from_date\": \"2025-12-16T22:44:26.497+01:00\",\r\n      \"to_date\": null\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/books/8fab9454-87f4-4b55-a84d-b6847c7c3726",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"books",
+								"8fab9454-87f4-4b55-a84d-b6847c7c3726"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "borrow_books",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc1YmY5NGMyLTFiZTMtNDkyZC04OTFkLTM0MjgxMTM1MTg3MSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY1MTI3MzUzLCJleHAiOjE3NjUxMzA5NTN9.52lMH6UC9vMC-F3ux0981SYXC3XrGrZilevVDuLypbs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"book_id\": \"29681fcf-4185-4480-8685-14d9939ef15c\",\r\n  \"from_date\": \"2025-01-10\",\r\n  \"to_date\": \"2025-01-20\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/books/29681fcf-4185-4480-8685-14d9939ef15c/borrow",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"books",
+								"29681fcf-4185-4480-8685-14d9939ef15c",
+								"borrow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user_books",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0ZjQwY2RlLTRiOTItNDgwZC1hZWQ0LTE1NzQxNmRmODNhZSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY1NDQwNzk5LCJleHAiOjE3NjU0NDQzOTl9.d_ya0GFpKRo9FwntEHsS8zoukVMQFJ0hgNCDeCBMIQI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/books/user/53aceb2a-55cb-4d96-b7c0-6f0b43440da4/books",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"books",
+								"user",
+								"53aceb2a-55cb-4d96-b7c0-6f0b43440da4",
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_books",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTY1NjkxOCwiZXhwIjoxNzY1NjYwNTE4fQ.AaiebG-SNHl3CjqlOrq5FY6SL-pzNyJJ9GhzdC6Vmwk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/books",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ai_Assistant",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTY0MjEwNSwiZXhwIjoxNzY1NjQ1NzA1fQ.ptNDgO76F-iAN3xPW6GICJVPEz2CwFmYB2qDYws4iB4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"question\": \"Show books that are not active\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/assistant/ask",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"assistant",
+								"ask"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AI_Insights",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTYzNzE2MSwiZXhwIjoxNzY1NjQwNzYxfQ.G60_OGXvu-ZibAu_1IGwhL4RTlH7EUcZL4DUaDgVlWM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/assistant/insights?user_name=maria_dev",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"assistant",
+								"insights"
+							],
+							"query": [
+								{
+									"key": "user_name",
+									"value": "maria_dev"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "filters",
+			"item": [
+				{
+					"name": "Filter_Books",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5ZWY5NTVlLTY4MTUtNDA5Ny1hOGExLTEwZWE3NWM2ODMwZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTIzMTIzMCwiZXhwIjoxNzY1MjM0ODMwfQ.X8oMSFkxCrrx_Lysijaf0a660XXRsioFWPGKuBZ9AJw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/books/filter/filter?genre=Thriller",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"books",
+								"filter",
+								"filter"
+							],
+							"query": [
+								{
+									"key": "genre",
+									"value": "Thriller"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
